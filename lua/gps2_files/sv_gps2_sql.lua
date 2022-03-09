@@ -10,6 +10,20 @@ function GPS.SQLInit()
         sql.Query( string.Left(str, #str-2) .. " );")
         end
     end
+    if not sql.TableExists("GPS2_Money") then
+        local str = "CREATE TABLE IF NOT EXISTS GP2_Money ( SID64 NVARCHAR , Points INTEGER ) ;"
+        sql.Query(str)
+    end
+end
+
+function GPS.GetPoints(ply)
+    local str = "SELECT Money FROM GPS2_Money WHERE SID4 = " .. SQLStr( ply:SteamID64() ) .. " ;"
+    return sql.QueryValue(str)
+end
+
+function GPS.SetPoints(ply, points)
+    local str = "UPDATE GPS2_Money SET Money = " .. SQLStr( points ) .. " WHERE SID64 = " .. SQLStr( ply:SteamID64() ) .." ;"
+    return sql.Query(str)
 end
 
 function GPS.AddToDB(item)
@@ -43,7 +57,6 @@ function GPS.RemoveFromDB(item)
     elseif GPS.Items and table.Count(GPS.Items) == 0 then
         GPS.ResetItemData()
     end
-
 end
 
 function GPS.ResetItemData()
@@ -74,6 +87,7 @@ function GPS.Unlock(ply, item)
     print('GPS2 Serverlog : ' .. ply:Name() .. " unlocked " .. GPS.Items[item].ClassName .. " id : w" .. tostring(item) )
     return sql.Query(str)
     -- return false if there is an error or you dont have permissions to unlock
+    -- GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[item].Price ) can be used after calling this function
 end
 
 function GPS.Lock(ply, item)
