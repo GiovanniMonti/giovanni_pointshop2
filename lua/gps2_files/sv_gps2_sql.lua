@@ -11,7 +11,7 @@ function GPS.SQLInit()
         end
     end
     if not sql.TableExists("GPS2_Money") then
-        local str = "CREATE TABLE IF NOT EXISTS GP2_Money ( SID64 NVARCHAR , Points INTEGER ) ;"
+        local str = "CREATE TABLE IF NOT EXISTS GPS2_Money ( SID64 NVARCHAR , Points INTEGER ) ;"
         sql.Query(str)
     end
 end
@@ -97,3 +97,14 @@ function GPS.Lock(ply, item)
     return sql.Query(str)
     -- return false if there is an error or you dont have permissions to unlock
 end
+
+hook.Add("PlayerInitialSpawn", "GPS2_PlayerInitialSpawn", function(ply)
+    if not GetPoints(ply) then
+        local str = "INSERT INTO GPS2_Money ( SID64, Points ) VALUES ( " .. ply:SteamID64() .. " , " .. "0" .." ) ;"
+        sql.Query(str)
+    end
+    local data = sql.Query("SELECT * FROM GPS2 WHERE SID64 = " .. sql.SQLStr( ply:SteamID64() ) .. " ;")
+    if not data then 
+        sql.Query( "INSERT INTO GPS2 ( SID64 ) VALUES( " .. sql.SQLStr( ply:SteamID64() ) .. " );" )
+    end
+end)

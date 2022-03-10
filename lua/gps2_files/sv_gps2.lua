@@ -1,12 +1,39 @@
 GPS = GPS or {}
 GPS.Items = GPS.Items or {}
 GPS.ItemIDs = GPS.ItemsIDs or {}
+
+GPS.Config.AdminRanks = {
+    ["superadmin"] = true,
+    --["admin"] = true,
+}
+
+GPS.Config.DonatorRanks = {
+    ["VIP"] = true,
+    ["VIPAdmin"] = true,
+    ["VIPGamemaster"] = true,
+    ["Donator"] = true,
+}
+
+function GPS.Config.CustomAdminCheck(ply)
+    if GPS.Config.AdminRanks[ ply:GetUserGroup() ] then 
+        return true
+    end
+    return false
+end
+
+function GPS.Config.IsDonator(ply)
+    if GPS.Config.AdminRanks[ ply:GetUserGroup() ] then 
+        return true
+    end
+    return false
+end
+
 -- decided to add NWStrings at the start so they dont get in the way later, seems better.
 util.AddNetworkString("GPS2_OpenMenu")
 util.AddNetworkString("GPS2_SendToClient")
 
 function GPS.SaveItemList()
-    if #GPS.Items >0 then
+    if #GPS.Items > 0 then
         file.Write("gps2.json",util.TableToJSON(GPS.Items))
     end
 end
@@ -54,12 +81,25 @@ function GPS.CanUnlock(ply, item)
     if GPS.Items[item].Price > ply:GetPoints(ply) then return false end
     return true
 end
+-- send only what you need
+function GPS.VisibleItems(ply)
+    if not ply then return false end
+    if GPS.Config.CustomAdminCheck(ply) then return GPS.Items end
+    local visibleItems = {}
+    for id, tbl in pairs(GPS.Items) do
+        if not tbl.Teams or tbl.Teams[ply:Team()] then
+            visibleItems[id] = tbl
+        end
+    end
+    return visibleItems
+end
 
 function GPS.SendWepsToClient(ply)
+    local VisibleItems = GPS.VisibleItems(ply)
     net.Start("GPS2_SendToClient",false)
-        net.WriteInt(#GPS.Items, 8)
-        for id, #GPS.Items do
-            local tbl = GPS.Items[id]
+        net.WriteInt( table.Count( VisibleItems ), 8)
+        for id,tbl in pairs( VisibleItems ) do
+            net.WriteInt(id, 8)
             net.WriteString(tbl.ClassName)
             net.WriteString(tbl.PrintName)
             net.WriteUInt(tbl.Price, 32)
@@ -74,11 +114,8 @@ end
 
 hook.Add("ShowSpare", "GPS2_OpenMenuCommand", function(ply)
     GPS.SendWepsToClient(ply)
-
     net.Start("GPS2_OpenMenu", true)
+    net.WriteBool(GPS.Config.CustomAdminCheck(ply))
+    net.WriteBool(GPS.Config.IsDonator(ply))
     net.Send(ply)
-end)
-
-hook.Add("PlayerInitialSpawn", "GPS2_PlayerInitialSpawn", function(ply)
-
 end)
