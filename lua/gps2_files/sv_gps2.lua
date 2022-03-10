@@ -14,6 +14,14 @@ GPS.Config.DonatorRanks = {
     ["Donator"] = true,
 }
 
+-- Do NOT edit below this line if you don't know what you're doing.
+
+-- decided to add NWStrings at the start so they dont get in the way later, seems better.
+util.AddNetworkString("GPS2_OpenMenu")
+util.AddNetworkString("GPS2_SendToClient")
+util.AddNetworkString("GPS2_SendTokensToClient")
+util.AddNetworkString("GPS2_ClientShopReq")
+
 function GPS.Config.CustomAdminCheck(ply)
     if GPS.Config.AdminRanks[ ply:GetUserGroup() ] then 
         return true
@@ -28,9 +36,6 @@ function GPS.Config.IsDonator(ply)
     return false
 end
 
--- decided to add NWStrings at the start so they dont get in the way later, seems better.
-util.AddNetworkString("GPS2_OpenMenu")
-util.AddNetworkString("GPS2_SendToClient")
 
 function GPS.SaveItemList()
     if #GPS.Items > 0 then
@@ -112,10 +117,44 @@ function GPS.SendWepsToClient(ply)
     net.Send(ply)
 end
 
+function GPS.SendPointsToClient(ply)
+    net.Start("GPS2_SendTokensToClient")
+    net.WriteUInt(GPS.GetPoints(ply), 32)
+    net.Send(ply)
+end
+
 hook.Add("ShowSpare", "GPS2_OpenMenuCommand", function(ply)
     GPS.SendWepsToClient(ply)
     net.Start("GPS2_OpenMenu", true)
     net.WriteBool(GPS.Config.CustomAdminCheck(ply))
     net.WriteBool(GPS.Config.IsDonator(ply))
     net.Send(ply)
+end)
+
+net.Receive("GPS2_ClientShopReq", function(ply)
+
+    local requestType = net.ReadUInt(4)
+
+    if requestType == 0 then 
+        -- update wep table
+        GPS.SendWepsToClient(ply)
+
+    elseif requestType == 1 then
+        -- requesting tokencount be sent
+        GPS.SendPointsToClient(ply)
+
+    elseif requestType == 2 then
+        -- select an item
+
+    elseif requestType == 3 then
+        -- buy an item
+
+    elseif requestType == 4 then
+        -- sell an item
+
+    elseif requestType == 5 then
+        -- edit/add an item
+
+    end
+
 end)
