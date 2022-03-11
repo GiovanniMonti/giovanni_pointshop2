@@ -1,6 +1,6 @@
-if SERVER then 
+GPS = GPS or {}
 
-    if GPS then print('You are using an addon which conflicts with GPS2, this may cause issues!') end
+if SERVER then 
     include("gps2_files/sv_gps2_sql.lua")
     include("gps2_files/sv_gps2.lua")
     AddCSLuaFile("gps2_files/cl_gps2.lua")

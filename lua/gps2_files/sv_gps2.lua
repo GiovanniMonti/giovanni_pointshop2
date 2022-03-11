@@ -1,4 +1,3 @@
-GPS = GPS or {}
 GPS.Items = GPS.Items or {}
 GPS.ItemIDs = GPS.ItemsIDs or {}
 
@@ -102,9 +101,9 @@ end
 function GPS.SendWepsToClient(ply)
     local VisibleItems = GPS.VisibleItems(ply)
     net.Start("GPS2_SendToClient",false)
-        net.WriteInt( table.Count( VisibleItems ), 8)
+        net.WriteUInt( table.Count( VisibleItems ), 8)
         for id,tbl in pairs( VisibleItems ) do
-            net.WriteInt(id, 8)
+            net.WriteUInt(id, 8)
             net.WriteString(tbl.ClassName)
             net.WriteString(tbl.PrintName)
             net.WriteUInt(tbl.Price, 32)
