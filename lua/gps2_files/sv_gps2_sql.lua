@@ -23,7 +23,9 @@ end
 
 function GPS.SetPoints(ply, points)
     local str = "UPDATE GPS2_Money SET Money = " .. SQLStr( points ) .. " WHERE SID64 = " .. SQLStr( ply:SteamID64() ) .." ;"
-    return sql.Query(str)
+    str = sql.Query(str)
+    ply:SetNWInt("GPS2_Points", GPS.GetPoints(ply) )
+    return str
 end
 
 function GPS.AddToDB(item)
@@ -99,7 +101,7 @@ function GPS.Lock(ply, item)
 end
 
 hook.Add("PlayerInitialSpawn", "GPS2_PlayerInitialSpawn", function(ply)
-    if not GetPoints(ply) then
+    if not GPS.GetPoints(ply) then
         local str = "INSERT INTO GPS2_Money ( SID64, Points ) VALUES ( " .. ply:SteamID64() .. " , " .. "0" .." ) ;"
         sql.Query(str)
     end

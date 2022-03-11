@@ -12,4 +12,4 @@ if CLIENT then
     include("gps2_files/cl_gps2.lua")
 end
 
-print("------------------\nGiovanni's Pointshop\n    V 2.0 loaded    \n------------------")
+print("----------------------\n  Giovanni's Pointshop\n    V 2.0 loaded    \n----------------------")

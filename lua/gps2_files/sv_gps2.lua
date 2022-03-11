@@ -1,6 +1,6 @@
 GPS.Items = GPS.Items or {}
 GPS.ItemIDs = GPS.ItemsIDs or {}
-
+GPS.Config = GPS.Config or {}
 GPS.Config.AdminRanks = {
     ["superadmin"] = true,
     --["admin"] = true,
@@ -18,7 +18,6 @@ GPS.Config.DonatorRanks = {
 -- decided to add NWStrings at the start so they dont get in the way later, seems better.
 util.AddNetworkString("GPS2_OpenMenu")
 util.AddNetworkString("GPS2_SendToClient")
-util.AddNetworkString("GPS2_SendTokensToClient")
 util.AddNetworkString("GPS2_ClientShopReq")
 
 function GPS.Config.CustomAdminCheck(ply)
@@ -113,12 +112,6 @@ function GPS.SendWepsToClient(ply)
                 net.WriteUInt(team, 8)
             end
         end
-    net.Send(ply)
-end
-
-function GPS.SendPointsToClient(ply)
-    net.Start("GPS2_SendTokensToClient")
-    net.WriteUInt(GPS.GetPoints(ply), 32)
     net.Send(ply)
 end
 

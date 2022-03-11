@@ -1,9 +1,8 @@
 GPS.ClItems = {}
-local playerGPS = {}
-
+-- LocalPlayer():GetNWInt("GPS2_Points")
 net.Receive("GPS2_SendToClient",function()
     local nItems = net.ReadUInt(8)
-    for i, nItems do
+    for i = 1, nItems do
         local id = net.ReadUInt(8)
         GPS.ClItems[id].ClassName = net.ReadString()
         GPS.ClItems[id].PrintName = net.ReadString()
@@ -11,18 +10,14 @@ net.Receive("GPS2_SendToClient",function()
         GPS.ClItems[id].Model = net.ReadString()
         local nTeams = net.ReadUInt(8)
         GPS.ClItems[id].Teams = {}
-        for j, nTeams do
+        for j = 1, nTeams do
             GPS.ClItems[id].Teams[net.ReadUInt(8)] = true
         end
     end
 end)
-
-net.Receive("GPS2_SendTokensToClient",function()
-    playerGPS.Points = net.ReadUInt(32)
-end)
-
+local GPSPlyData = {}
 net.Receive("GPS2_OpenMenu", function()
-    playerGPS.IsAdmin = net.ReadBool()
-    playerGPS.IsDonator = net.ReadBool()
+    GPSPlyData.isadmin = net.ReadBool()
+    GPSPlyData.isdonator = net.ReadBool()
 
 end)
