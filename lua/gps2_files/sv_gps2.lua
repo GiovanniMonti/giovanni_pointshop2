@@ -51,19 +51,21 @@ end
 
 -- function to add weapons to the shop, model should be that of the weapon
 -- returns false if weapon adding fails.
-function GPS.AddWeapon( classname, printname, price, model, teamsTbl )
+function GPS.AddWeapon( classname, printname, price, model, category, group, teamsTbl )
     if not classname or not weapons.GetStored(classname) or not printname or string.Trim(printname) == "" then return false end
 
     price = price or 0
     model = model or ''
-
+    if group < 1 or group > 3 then group = 1 end
     local id = # GPS.Items + 1
     GPS.Items[id] = {
         ["ClassName"] = classname,
         ["PrintName"] = printname,
         ["Price"] = price,
         ["Model"] = model,
-        ["Teams"] = teamsTbl -- {} : none; nil : all; teamIDs : whitelist behaviour
+        ["Category"] = category,
+        ["Group"] = group,
+        ["Teams"] = teamsTbl -- {} : none; true : all; teamIDs : whitelist behaviour
     }
     GPS.ItemIDs[classname] = id
     GPS.SaveItemList()
@@ -106,9 +108,18 @@ function GPS.SendWepsToClient(ply)
             net.WriteString(tbl.ClassName)
             net.WriteString(tbl.PrintName)
             net.WriteUInt(tbl.Price, 32)
+            net.WriteString(tbl.Category)
+            net.WriteUInt(tbl.Group, 2)
             net.WriteString(tbl.Model)
             net.WriteBool(GPS.HasItem(ply,id))
-            net.WriteUInt(table.Count(tbl.Teams), 8)
+            local nTeams = 0
+            if not tbl.teams then 
+                nTeams = 0 
+            else
+                nTeams = table.Count(tbl.Teams)
+            end
+            net.WriteUInt(nTeams, 8)
+            if nTeams < 1 then continue end
             for team,_ in pairs(tbl.Teams) do
                 net.WriteUInt(team, 8)
             end
