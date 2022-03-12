@@ -4,21 +4,24 @@ GPS.ClItems = {}
 function GPS.OpenMenu()
 
     local frame = vgui.Create("DFrame")
-    frame:SetSize(ScrW()/3,ScrH()/2)
+    frame:SetSize(ScrW()/2,ScrH()/2)
     frame:Center()
     frame:SetTitle("")
     frame:SetDraggable(false)
     frame:MakePopup()
-    frame.btnMaxim:SetVisible( false )
-	frame.btnMinim:SetVisible( false )
+    frame:ShowCloseButton( false )
 
     function frame:Paint(w,h)
         draw.RoundedBox(2, 0, 0, w, h, Color(35, 35, 35, 240))
     end
 
-    --function frame.btnClose:Paint()
-
-    --end
+    frame.closeBtn = vgui.Create( "DImageButton", frame )
+	frame.closeBtn:SetText( "" )
+	frame.closeBtn.DoClick = function ( button ) frame:Remove() end
+    frame.closeBtn:SetImage("gps_cross_icon.png")
+    frame.closeBtn:SizeToContents()
+    frame.closeBtn:SetSize( frame.closeBtn:GetWide()*0.8, frame.closeBtn:GetTall()*0.8 )
+    frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.1, frame:GetTall()*0.01 )
 end
 
 
