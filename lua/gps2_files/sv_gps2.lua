@@ -107,6 +107,7 @@ function GPS.SendWepsToClient(ply)
             net.WriteString(tbl.PrintName)
             net.WriteUInt(tbl.Price, 32)
             net.WriteString(tbl.Model)
+            net.WriteBool(GPS.HasItem(ply,id))
             net.WriteUInt(table.Count(tbl.Teams), 8)
             for team,_ in pairs(tbl.Teams) do
                 net.WriteUInt(team, 8)
@@ -115,7 +116,8 @@ function GPS.SendWepsToClient(ply)
     net.Send(ply)
 end
 
-hook.Add("ShowSpare", "GPS2_OpenMenuCommand", function(ply)
+hook.Add("ShowSpare1", "GPS2_OpenMenuCommand", function(ply)
+    print(ply:Nick())
     GPS.SendWepsToClient(ply)
     net.Start("GPS2_OpenMenu", true)
     net.WriteBool(GPS.Config.CustomAdminCheck(ply))

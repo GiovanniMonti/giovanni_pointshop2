@@ -1,5 +1,17 @@
 GPS.ClItems = {}
 -- LocalPlayer():GetNWInt("GPS2_Points")
+
+function GPS.OpenMenu()
+
+    local frame = vgui.Create("DFrame")
+    frame:SetSize(ScrW()/3,ScrH()/2)
+    frame:Center()
+    frame:SetTitle("")
+    frame:SetDraggable(false)
+    frame:MakePopup()
+end
+
+
 net.Receive("GPS2_SendToClient",function()
     local nItems = net.ReadUInt(8)
     for i = 1, nItems do
@@ -8,6 +20,7 @@ net.Receive("GPS2_SendToClient",function()
         GPS.ClItems[id].PrintName = net.ReadString()
         GPS.ClItems[id].Price = net.ReadUInt(32)
         GPS.ClItems[id].Model = net.ReadString()
+        GPS.ClItems[id].Owned = net.ReadBool() -- just for gui, not used in real checks.
         local nTeams = net.ReadUInt(8)
         GPS.ClItems[id].Teams = {}
         for j = 1, nTeams do
@@ -19,5 +32,5 @@ local GPSPlyData = {}
 net.Receive("GPS2_OpenMenu", function()
     GPSPlyData.isadmin = net.ReadBool()
     GPSPlyData.isdonator = net.ReadBool()
-
+    GPS.OpenMenu()
 end)
