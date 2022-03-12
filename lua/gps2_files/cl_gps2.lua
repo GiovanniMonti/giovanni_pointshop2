@@ -9,6 +9,16 @@ function GPS.OpenMenu()
     frame:SetTitle("")
     frame:SetDraggable(false)
     frame:MakePopup()
+    frame.btnMaxim:SetVisible( false )
+	frame.btnMinim:SetVisible( false )
+
+    function frame:Paint(w,h)
+        draw.RoundedBox(2, 0, 0, w, h, Color(35, 35, 35, 240))
+    end
+
+    --function frame.btnClose:Paint()
+
+    --end
 end
 
 
