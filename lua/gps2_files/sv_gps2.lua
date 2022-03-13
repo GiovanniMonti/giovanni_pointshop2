@@ -128,7 +128,6 @@ function GPS.SendWepsToClient(ply)
 end
 
 hook.Add("ShowSpare1", "GPS2_OpenMenuCommand", function(ply)
-    print(ply:Nick())
     GPS.SendWepsToClient(ply)
     net.Start("GPS2_OpenMenu", true)
     net.WriteBool(GPS.Config.CustomAdminCheck(ply))
