@@ -30,17 +30,30 @@ function GPS:OpenMenu()
     frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.1, frame:GetTall()*0.01 )
 
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
-    frame.itemShop:SetPos(frame:GetWide()*0.3,frame:GetTall()*0.22)
-    frame.itemShop:SetSize(frame:GetWide()*0.78,frame:GetTall()*0.78)
+    frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.22)
+    frame.itemShop:SetSize(frame:GetWide()*0.62,frame:GetTall()*0.76)
     function frame.itemShop:Update()
-        print(frame.catSelect.GetSelected():GetText(),1) --! possibly not working properly. bugtest this
         for id,tbl in pairs(GPS.ItemsByCateogry[frame.catSelect.GetSelected():GetText()]) do
-            local wepLabel = self:Add("DLabel")
-            wepLabel:SetText( tbl.PrintName )
-            wepLabel:Dock( TOP )
-            wepLabel:DockMargin(ScrW()/384, 0, 0, ScrH()/216)
-            wepLabel:SetFont("DermaLarge")
-            wepLabel:SizeToContents() -- TODO add buttons for buy/sell
+            local curItem = self:Add("DPanel")
+            curItem:Dock( TOP )
+            
+            curItem:SetSize(self:GetWide()*0.85, self:GetTall()*0.2)
+
+            function curItem:Paint()
+                surface.SetDrawColor(92, 92, 92, 255 )
+                self:DrawOutlinedRect()
+            end
+
+            curItem.nameLabel = vgui.Create("DLabel", curItem)
+            curItem.nameLabel:SetFont("DermaLarge")
+            curItem.nameLabel:SetText(tbl.PrintName)
+            curItem.nameLabel:SizeToContents()
+            curItem.nameLabel:Dock(TOP)
+            curItem.nameLabel:DockMargin(self:GetWide()*0.2, self:GetTall()*0.065, 0, 0)
+
+            -- TODO modelpanel
+            -- TODO add label item and buttons to curItem
+
         end
     end
 
