@@ -18,7 +18,7 @@ function GPS:OpenMenu()
     function frame:Paint(w,h)
         draw.RoundedBox(2, 0, 0, w, h, Color(45, 45, 45, 240))
         surface.SetDrawColor( 105, 105, 105 )
-        surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.9)
+        surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.1, self:GetWide() * 0.2 , self:GetTall() * 0.9)
     end
 
     frame.closeBtn = vgui.Create( "DImageButton", frame )
@@ -28,7 +28,7 @@ function GPS:OpenMenu()
     frame.closeBtn:SizeToContents()
     frame.closeBtn:SetSize( frame.closeBtn:GetWide()*0.4, frame.closeBtn:GetTall()*0.4 )
     frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.1, frame:GetTall()*0.01 )
-
+    -- todo raise this up to match line
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
     frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.22)
     frame.itemShop:SetSize(frame:GetWide()*0.62,frame:GetTall()*0.76)
@@ -36,7 +36,7 @@ function GPS:OpenMenu()
         for id,tbl in pairs(GPS.ItemsByCateogry[frame.catSelect.GetSelected():GetText()]) do
             local curItem = self:Add("DPanel")
             curItem:Dock( TOP )
-            
+            -- todo make slightly bigger
             curItem:SetSize(self:GetWide()*0.85, self:GetTall()*0.2)
 
             function curItem:Paint()
@@ -50,9 +50,19 @@ function GPS:OpenMenu()
             curItem.nameLabel:SizeToContents()
             curItem.nameLabel:Dock(TOP)
             curItem.nameLabel:DockMargin(self:GetWide()*0.2, self:GetTall()*0.065, 0, 0)
+            -- todo move price below name
+            curItem.priceLabel = vgui.Create("DLabel", curItem)
+            curItem.priceLabel:SetFont("DermaLarge")
+            curItem.priceLabel:SetText( "Price : " .. tostring(tbl.Price) )
+            curItem.priceLabel:SizeToContents()
+            curItem.priceLabel:SetPos(curItem:GetWide()*0.7, curItem:GetTall()*0.3 )
+            -- todo add category label and buy / sell button
+            curItem.modelPanel = vgui.Create("DModelPanel", curItem)
+            curItem.modelPanel:SetModel( tbl.Model )
+            curItem.modelPanel:SetSize(self:GetWide()*0.15, self:GetTall()*0.2)
+            function curItem.modelPanel:LayoutEntity( Entity ) return end -- disables default rotation
 
-            -- TODO modelpanel
-            -- TODO add label item and buttons to curItem
+            -- TODO add purchase and sell buttons to curItem
 
         end
     end
