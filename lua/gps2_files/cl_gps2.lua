@@ -18,7 +18,8 @@ function GPS:OpenMenu()
     function frame:Paint(w,h)
         draw.RoundedBox(2, 0, 0, w, h, Color(45, 45, 45, 240))
         surface.SetDrawColor( 105, 105, 105 )
-        surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.1, self:GetWide() * 0.2 , self:GetTall() * 0.9)
+        surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.9)
+        surface.DrawLine(self:GetWide() * 0.02 , self:GetTall() * 0.18, self:GetWide() * 0.98 , self:GetTall() * 0.18)
     end
 
     frame.closeBtn = vgui.Create( "DImageButton", frame )
@@ -28,7 +29,7 @@ function GPS:OpenMenu()
     frame.closeBtn:SizeToContents()
     frame.closeBtn:SetSize( frame.closeBtn:GetWide()*0.4, frame.closeBtn:GetTall()*0.4 )
     frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.1, frame:GetTall()*0.01 )
-    -- todo raise this up to match line
+
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
     frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.22)
     frame.itemShop:SetSize(frame:GetWide()*0.62,frame:GetTall()*0.76)
@@ -36,11 +37,13 @@ function GPS:OpenMenu()
         for id,tbl in pairs(GPS.ItemsByCateogry[frame.catSelect.GetSelected():GetText()]) do
             local curItem = self:Add("DPanel")
             curItem:Dock( TOP )
-            -- todo make slightly bigger
-            curItem:SetSize(self:GetWide()*0.85, self:GetTall()*0.2)
+            curItem:SetSize(self:GetWide()*0.85, self:GetTall()*0.3)
 
             function curItem:Paint()
                 surface.SetDrawColor(92, 92, 92, 255 )
+                surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.65, self:GetWide() , self:GetTall() * 0.65)
+                surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0, self:GetWide() * 0.2 , self:GetTall() )
+                surface.DrawLine(self:GetWide() * 0.58 , self:GetTall() * 0.65, self:GetWide() * 0.58 , self:GetTall() )
                 self:DrawOutlinedRect()
             end
 
@@ -49,24 +52,51 @@ function GPS:OpenMenu()
             curItem.nameLabel:SetText(tbl.PrintName)
             curItem.nameLabel:SizeToContents()
             curItem.nameLabel:Dock(TOP)
-            curItem.nameLabel:DockMargin(self:GetWide()*0.2, self:GetTall()*0.065, 0, 0)
-            -- todo move price below name
+            curItem.nameLabel:DockMargin(self:GetWide()*0.22, self:GetTall()*0.065, 0, 0)
+
             curItem.priceLabel = vgui.Create("DLabel", curItem)
             curItem.priceLabel:SetFont("DermaLarge")
             curItem.priceLabel:SetText( "Price : " .. tostring(tbl.Price) )
-            curItem.priceLabel:SizeToContents()
-            curItem.priceLabel:SetPos(curItem:GetWide()*0.7, curItem:GetTall()*0.3 )
-            -- todo add category label and buy / sell button
+            curItem.priceLabel:SetSize(curItem:GetWide()*0.4,curItem:GetTall()*0.33)
+            curItem.priceLabel:SetPos(curItem:GetWide()*0.26 , curItem:GetTall()*0.7 )
+
+            curItem.transactionButton = vgui.Create("DLabel", curItem)
+            curItem.transactionButton:SetFont("DermaLarge")
+            curItem.transactionButton:SetSize(curItem:GetWide()*0.4, curItem:GetTall()*0.33)
+            curItem.transactionButton:SetPos(curItem:GetWide()*0.7 , curItem:GetTall()*0.7 )
+            curItem.transactionButton:SetMouseInputEnabled(true)
+            function curItem.transactionButton:Update() 
+                if (tbl.Owned) then
+                    self:SetText( "Sell" )
+                else
+                    self:SetText( "Buy" )
+                end
+            end
+            function curItem.transactionButton:DoClick()
+                if tbl.Owned then
+                    GPS.ClientShopReq(GPS.NET_ENUM.SELL, {id})
+                else
+                    GPS.ClientShopReq(GPS.NET_ENUM.BUY, {id})
+                end
+            end
+
+            function curItem.transactionButton:OnCursorEntered()
+                self:SetTextColor(Color(61, 123, 224))
+            end
+            function curItem.transactionButton:OnCursorExited()
+                self:SetTextColor(Color(255, 255, 255))
+            end
+
+            curItem.transactionButton:Update()
+
             curItem.modelPanel = vgui.Create("DModelPanel", curItem)
             curItem.modelPanel:SetModel( tbl.Model )
             curItem.modelPanel:SetSize(self:GetWide()*0.15, self:GetTall()*0.2)
             function curItem.modelPanel:LayoutEntity( Entity ) return end -- disables default rotation
 
-            -- TODO add purchase and sell buttons to curItem
-
         end
     end
-
+    -- todo make cat selection look ok-ish
     frame.catSelect = vgui.Create("DScrollPanel", frame )
     frame.catSelect:SetPos(frame:GetWide()*0.01,frame:GetTall()*0.22)
     frame.catSelect:SetSize(frame:GetWide()*0.18,frame:GetTall()*0.78)
@@ -120,6 +150,44 @@ function GPS:OpenMenu()
 
     frame.catSelect:Update()
     frame.itemShop:Update()
+end
+
+------------------- net code below
+
+GPS.NET_ENUM = {
+    ["WEPTBL"] = 0,
+    ["SELECT"] = 1,
+    ["BUY"] = 2,
+    ["SELL"] = 3,
+    ["EDIT"] = 4,
+    ["ADD"] = 4,
+}
+
+function GPS.ClientShopReq(requestType, args)
+    --[[
+        0 : request wep table update; {}
+        1 : select item; {itemID}
+        2 : buy item; {itemID}
+        3 : sell item; {itemID}
+        TODO 4 : add/edit item;
+    --]]
+    net.Start("GPS2_ClientShopReq")
+    net.WriteUInt(requestType, 4)
+
+    if requestType == 0 then
+        
+    elseif requestType == 1 then
+        net.WriteUInt(args[1], 8)
+    elseif requestType == 2 then
+        -- buy an item
+        net.WriteUInt(args[1], 8)
+    elseif requestType == 3 then
+        -- sell an item
+        net.WriteUInt(args[1], 8)
+    elseif requestType == 4 then
+        -- TODO edit/add an item
+    end
+    net.SendToServer()
 end
 
 

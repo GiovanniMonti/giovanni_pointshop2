@@ -135,30 +135,26 @@ hook.Add("ShowSpare1", "GPS2_OpenMenuCommand", function(ply)
     net.Send(ply)
 end)
 
-net.Receive("GPS2_ClientShopReq", function(ply)
-
+net.Receive("GPS2_ClientShopReq", function(len,ply)
     local requestType = net.ReadUInt(4)
-
     if requestType == 0 then 
         -- update wep table
         GPS.SendWepsToClient(ply)
-
+        print("GPS " .. ply:Nick() .. " requesting wep table refresh")
     elseif requestType == 1 then
-        -- requesting tokencount be sent
-        GPS.SendPointsToClient(ply)
-
+        -- TODO select an item
+        local id = net.ReadUInt(8)
+        print("GPS " .. ply:Nick() .. " selecting wep id : " .. id)
     elseif requestType == 2 then
-        -- select an item
-
+        -- TODO buy an item
+        local id = net.ReadUInt(8)
+        print("GPS " .. ply:Nick() .. " buying wep id : " .. id)
     elseif requestType == 3 then
-        -- buy an item
-
+        -- TODO sell an item
+        local id = net.ReadUInt(8)
+        print("GPS " .. ply:Nick() .. " selling wep id : " .. id)
     elseif requestType == 4 then
-        -- sell an item
-
-    elseif requestType == 5 then
-        -- edit/add an item
-
+        -- TODO edit/add an item
     end
 
 end)
