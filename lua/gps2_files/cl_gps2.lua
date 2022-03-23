@@ -84,6 +84,7 @@ function GPS:OpenMenu()
                 self:SetTextColor(Color(61, 123, 224))
             end
             function curItem.transactionButton:OnCursorExited()
+                self:Update() -- update after a click, should resolve visual bugs.
                 self:SetTextColor(Color(255, 255, 255))
             end
 
@@ -96,7 +97,7 @@ function GPS:OpenMenu()
 
         end
     end
-    -- todo make cat selection look ok-ish
+    -- todo make cat selection look ok-ish.
     frame.catSelect = vgui.Create("DScrollPanel", frame )
     frame.catSelect:SetPos(frame:GetWide()*0.01,frame:GetTall()*0.22)
     frame.catSelect:SetSize(frame:GetWide()*0.18,frame:GetTall()*0.78)
@@ -111,13 +112,13 @@ function GPS:OpenMenu()
             catLabel:SizeToContents()
             catLabel:SetMouseInputEnabled( true )
             catLabel.selected = false
-            if not frame.catSelect.selected then frame.catSelect.selected = catLabel end
             function catLabel:SelectThis()
                 if frame.catSelect.selected == self then return end
-                if not frame.catSelect.selected then frame.catSelect.selected = self end
+                --if not frame.catSelect.selected then frame.catSelect.selected = self end
                 frame.catSelect.selected.selected = false
                 frame.catSelect.selected = self
                 self.selected = true
+                frame.itemShop:Update()
             end
             function catLabel:OnCursorEntered()
                 if not self.selected then
@@ -141,9 +142,13 @@ function GPS:OpenMenu()
                 end
             end
             function catLabel:OnDepressed()
-                self.selected = not self.selected
-                if self.selected then self:SelectThis() end
+                if not self.selected then self:SelectThis() end
                 self:ToggleColor()
+            end
+            if not frame.catSelect.selected then 
+                frame.catSelect.selected = catLabel
+                catLabel.selected = true
+                catLabel:ToggleColor()
             end
         end
     end
