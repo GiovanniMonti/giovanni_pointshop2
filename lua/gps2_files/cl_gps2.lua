@@ -92,9 +92,11 @@ function GPS:OpenMenu()
 
             curItem.modelPanel = vgui.Create("DModelPanel", curItem)
             curItem.modelPanel:SetModel( tbl.Model )
-            curItem.modelPanel:SetSize(self:GetWide()*0.15, self:GetTall()*0.2)
-            function curItem.modelPanel:LayoutEntity( Entity ) return end -- disables default rotation
-
+            curItem.modelPanel:SetSize(curItem:GetTall()*0.9,curItem:GetTall()*0.9)
+            local min,max = curItem.modelPanel.Entity:GetRenderBounds();
+			curItem.modelPanel:SetCamPos( min:Distance( max ) * Vector( .55, .55, .25 ) )
+			curItem.modelPanel:SetLookAt( ( min + max ) / 2 )
+			curItem.modelPanel.LayoutEntity = function() end
         end
     end
     -- todo make cat selection look ok-ish.
