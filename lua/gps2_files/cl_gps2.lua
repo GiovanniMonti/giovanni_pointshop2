@@ -22,6 +22,33 @@ function GPS:OpenMenu()
         surface.DrawLine(self:GetWide() * 0.02 , self:GetTall() * 0.18, self:GetWide() * 0.98 , self:GetTall() * 0.18)
     end
 
+    function frame:ChangeToTab(newTab)
+        --[[
+            tab 0 = shop
+            tab 1 = wep select
+            tab 2 = admin
+        --]]
+        if not newTab or not ( newTab >=0 and newTab <=2 ) then return end
+        if curTab == 0 then
+            self.itemShop:Hide()
+            self.catSelect:Hide()
+        elseif curTab == 1 then
+            self.loadoutSelect:Hide()
+        else 
+            -- hide admin
+        end
+
+        if newTab == 0 then
+            self.itemShop:Show()
+            self.catSelect:Show()
+        elseif curTab == 1 then
+            self.loadoutSelect:Show()
+        else 
+            -- show admin
+        end
+        self.CurTab = newTab
+    end
+
     frame.closeBtn = vgui.Create( "DImageButton", frame )
 	frame.closeBtn:SetText( "" )
 	frame.closeBtn.DoClick = function ( button ) frame:Remove() end
@@ -29,6 +56,10 @@ function GPS:OpenMenu()
     frame.closeBtn:SizeToContents()
     frame.closeBtn:SetSize( frame.closeBtn:GetWide()*0.4, frame.closeBtn:GetTall()*0.4 )
     frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.1, frame:GetTall()*0.01 )
+
+    frame.loadoutSelect = {} --TODO make the 3 cats individually in here
+    -- frame.loadoutSelect:Show() --todo make this show all 3
+    -- frame.loadoutSelect:Hide() --todo make this hide all 3
 
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
     frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.22)
@@ -99,7 +130,6 @@ function GPS:OpenMenu()
 			curItem.modelPanel.LayoutEntity = function() end
         end
     end
-
     frame.catSelect = vgui.Create("DScrollPanel", frame )
     frame.catSelect:SetPos(frame:GetWide()*0.01,frame:GetTall()*0.22)
     frame.catSelect:SetSize(frame:GetWide()*0.18,frame:GetTall()*0.78)
@@ -153,9 +183,10 @@ function GPS:OpenMenu()
             end
         end
     end
-
     frame.catSelect:Update()
     frame.itemShop:Update()
+    frame.CurTab = 0
+    -- always default to shop
 end
 
 ------------------- net code below
