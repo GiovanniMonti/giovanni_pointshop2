@@ -91,7 +91,7 @@ function GPS:OpenMenu()
             curItem.transactionButton:Update()
 
             curItem.modelPanel = vgui.Create("DModelPanel", curItem)
-            curItem.modelPanel:SetModel( tbl.Model )
+            curItem.modelPanel:SetModel( tbl.Model)
             curItem.modelPanel:SetSize(curItem:GetTall()*0.9,curItem:GetTall()*0.9)
             local min,max = curItem.modelPanel.Entity:GetRenderBounds();
 			curItem.modelPanel:SetCamPos( min:Distance( max ) * Vector( .55, .55, .25 ) )
@@ -99,7 +99,7 @@ function GPS:OpenMenu()
 			curItem.modelPanel.LayoutEntity = function() end
         end
     end
-    -- todo make cat selection look ok-ish.
+
     frame.catSelect = vgui.Create("DScrollPanel", frame )
     frame.catSelect:SetPos(frame:GetWide()*0.01,frame:GetTall()*0.22)
     frame.catSelect:SetSize(frame:GetWide()*0.18,frame:GetTall()*0.78)
@@ -109,14 +109,13 @@ function GPS:OpenMenu()
             local catLabel = self:Add("DLabel")
             catLabel:SetText( tostring(category) )
             catLabel:Dock( TOP )
-            catLabel:DockMargin(ScrW()/384, 0, 0, ScrH()/216)
             catLabel:SetFont("DermaLarge")
             catLabel:SizeToContents()
+            catLabel:DockMargin(ScrW()*0.02, 0, 0, ScrH()/216)
             catLabel:SetMouseInputEnabled( true )
             catLabel.selected = false
             function catLabel:SelectThis()
                 if frame.catSelect.selected == self then return end
-                --if not frame.catSelect.selected then frame.catSelect.selected = self end
                 frame.catSelect.selected.selected = false
                 frame.catSelect.selected = self
                 self.selected = true
@@ -176,7 +175,7 @@ function GPS.ClientShopReq(requestType, args)
         1 : select item; {itemID}
         2 : buy item; {itemID}
         3 : sell item; {itemID}
-        TODO 4 : add/edit item;
+        4 : add/edit item;
     --]]
     net.Start("GPS2_ClientShopReq")
     net.WriteUInt(requestType, 4)
@@ -192,7 +191,7 @@ function GPS.ClientShopReq(requestType, args)
         -- sell an item
         net.WriteUInt(args[1], 8)
     elseif requestType == 4 then
-        -- TODO edit/add an item
+        -- TODO edit/add items
     end
     net.SendToServer()
 end
@@ -216,6 +215,10 @@ net.Receive("GPS2_SendToClient",function()
         if not table.HasValue(GPS.WepCategories, GPS.ClItems[id].Category) then
             table.insert(GPS.WepCategories, GPS.ClItems[id].Category)
             GPS.ItemsByCateogry[ GPS.ClItems[id].Category ] = {}
+        end
+
+        if GPS.ClItems[id].Model == '' then
+            GPS.ClItems[id].Model = "models/props_interiors/pot02a.mdl"
         end
 
         local nTeams = net.ReadUInt(8)
