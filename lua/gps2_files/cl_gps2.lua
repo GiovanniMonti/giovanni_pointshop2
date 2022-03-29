@@ -14,12 +14,16 @@ function GPS:OpenMenu()
     frame:SetDraggable(false)
     frame:MakePopup()
     frame:ShowCloseButton( false )
+    frame.CurTab = 0
 
+    function frame:AdditionalPaint(w,h)
+        if self.CurTab == 0 then surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.9) end
+    end
     function frame:Paint(w,h)
         draw.RoundedBox(2, 0, 0, w, h, Color(45, 45, 45, 240))
         surface.SetDrawColor( 105, 105, 105 )
-        surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.9)
         surface.DrawLine(self:GetWide() * 0.02 , self:GetTall() * 0.18, self:GetWide() * 0.98 , self:GetTall() * 0.18)
+        self:AdditionalPaint(w,h)
     end
 
     function frame:ChangeToTab(newTab)
@@ -29,10 +33,10 @@ function GPS:OpenMenu()
             tab 2 = admin
         --]]
         if not newTab or not ( newTab >=0 and newTab <=2 ) then return end
-        if curTab == 0 then
+        if self.CurTab == 0 then
             self.itemShop:Hide()
             self.catSelect:Hide()
-        elseif curTab == 1 then
+        elseif self.CurTab == 1 then
             self.loadoutSelect:Hide()
         else 
             -- hide admin
@@ -41,7 +45,7 @@ function GPS:OpenMenu()
         if newTab == 0 then
             self.itemShop:Show()
             self.catSelect:Show()
-        elseif curTab == 1 then
+        elseif newTab == 1 then
             self.loadoutSelect:Show()
         else 
             -- show admin
@@ -57,9 +61,34 @@ function GPS:OpenMenu()
     frame.closeBtn:SetSize( frame.closeBtn:GetWide()*0.4, frame.closeBtn:GetTall()*0.4 )
     frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.1, frame:GetTall()*0.01 )
 
+    frame.tabSelect = {}    -- todo make selection thingy
+    frame.tabSelect[1] = vgui.Create("DLabel", frame)
+    frame.tabSelect[1]:SetFont("DermaLarge")
+    frame.tabSelect[1]:SetText("Shop")
+    frame.tabSelect[1]:SizeToContents()
+    frame.tabSelect[1]:SetPos(frame:GetWide()*0.25,frame:GetTall()*0.12)
+    frame.tabSelect[1]:SetMouseInputEnabled(true)
+    frame.tabSelect[1].DoClick = function()
+        frame:ChangeToTab(1)
+    end
+    frame.tabSelect[1].OnCursorEntered = function(self)
+        self:SetTextColor(Color(61, 123, 224))
+    end
+    frame.tabSelect[1].OnCursorExited = function(self)
+        self:SetTextColor(Color(255, 255, 255))
+    end
+
     frame.loadoutSelect = {} --TODO make the 3 cats individually in here
-    -- frame.loadoutSelect:Show() --todo make this show all 3
-    -- frame.loadoutSelect:Hide() --todo make this hide all 3
+    frame.loadoutSelect[1] = vgui.Create("DScrollPanel", frame)
+    frame.loadoutSelect[1]:SetPos(0,0)
+    --todo actually make this and the other 2
+
+    function frame.loadoutSelect:Show()
+       self[1]:Show()
+    end
+    function frame.loadoutSelect:Hide()
+        self[1]:Hide()
+    end
 
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
     frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.22)
@@ -185,7 +214,8 @@ function GPS:OpenMenu()
     end
     frame.catSelect:Update()
     frame.itemShop:Update()
-    frame.CurTab = 0
+
+    frame:ChangeToTab(1)
     -- always default to shop
 end
 
