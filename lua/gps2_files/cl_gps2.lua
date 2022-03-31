@@ -83,22 +83,22 @@ function GPS:OpenMenu()
     frame.tabSelect[1]:SetMouseInputEnabled(true)
     frame.tabSelect[1].DoClick = function()
         frame:ChangeToTab(0)
+        frame.tabSelect:UpdateColors()
     end
     frame.tabSelect[1].OnCursorEntered = function(self)
-        if self.Selected then
-
+        if frame.CurTab == 0 then
+            self:SetTextColor(GPS.Config.LabelColorSH)
         else
             self:SetTextColor(GPS.Config.LabelColorH)
         end
     end
     frame.tabSelect[1].OnCursorExited = function(self)
-        if self.Selected then
-
+        if frame.CurTab == 0 then
+            self:SetTextColor(GPS.Config.LabelColorS)
         else
             self:SetTextColor(GPS.Config.LabelColor)
         end
     end
-
     frame.tabSelect[2] = vgui.Create("DLabel", frame)
     frame.tabSelect[2]:SetFont("DermaLarge")
     frame.tabSelect[2]:SetText("Loadout")
@@ -107,12 +107,21 @@ function GPS:OpenMenu()
     frame.tabSelect[2]:SetMouseInputEnabled(true)
     frame.tabSelect[2].DoClick = function()
         frame:ChangeToTab(1)
+        frame.tabSelect:UpdateColors()
     end
     frame.tabSelect[2].OnCursorEntered = function(self)
-        self:SetTextColor(GPS.Config.LabelColorH)
+        if frame.CurTab == 1 then
+            self:SetTextColor(GPS.Config.LabelColorSH)
+        else
+            self:SetTextColor(GPS.Config.LabelColorH)
+        end
     end
     frame.tabSelect[2].OnCursorExited = function(self)
-        self:SetTextColor(GPS.Config.LabelColor)
+        if frame.CurTab == 1 then
+            self:SetTextColor(GPS.Config.LabelColorS)
+        else
+            self:SetTextColor(GPS.Config.LabelColor)
+        end
     end
     
     frame.tabSelect[3] = vgui.Create("DLabel", frame)
@@ -123,12 +132,35 @@ function GPS:OpenMenu()
     frame.tabSelect[3]:SetMouseInputEnabled(true)
     frame.tabSelect[3].DoClick = function()
         frame:ChangeToTab(2)
+        frame.tabSelect:UpdateColors()
     end
     frame.tabSelect[3].OnCursorEntered = function(self)
-        self:SetTextColor(GPS.Config.LabelColorH)
+        if frame.CurTab == 2 then
+            self:SetTextColor(GPS.Config.LabelColorSH)
+        else
+            self:SetTextColor(GPS.Config.LabelColorH)
+        end
     end
     frame.tabSelect[3].OnCursorExited = function(self)
-        self:SetTextColor(GPS.Config.LabelColor)
+        if frame.CurTab == 2 then
+            self:SetTextColor(GPS.Config.LabelColorS)
+        else
+            self:SetTextColor(GPS.Config.LabelColor)
+        end
+    end
+    function frame.tabSelect:UpdateColors()
+        local curtab = frame.CurTab + 1
+        self[curtab]:SetTextColor(GPS.Config.LabelColorS)
+        if curtab == 1 then
+            self[2]:SetTextColor(GPS.Config.LabelColor)
+            self[3]:SetTextColor(GPS.Config.LabelColor)
+        elseif curtab == 2 then
+            self[1]:SetTextColor(GPS.Config.LabelColor)
+            self[3]:SetTextColor(GPS.Config.LabelColor)
+        else
+            self[1]:SetTextColor(GPS.Config.LabelColor)
+            self[2]:SetTextColor(GPS.Config.LabelColor)
+        end
     end
 
     frame.loadoutSelect = {} --TODO make the 3 cats individually in here
@@ -138,9 +170,13 @@ function GPS:OpenMenu()
 
     function frame.loadoutSelect:Show()
         self[1]:Show()
+        self[2]:Show()
+        self[3]:Show()
     end
     function frame.loadoutSelect:Hide()
         self[1]:Hide()
+        self[2]:Hide()
+        self[3]:Hide()
     end
 
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
@@ -267,8 +303,8 @@ function GPS:OpenMenu()
     end
     frame.catSelect:Update()
     frame.itemShop:Update()
-
     frame:ChangeToTab(0)
+    frame.tabSelect:UpdateColors()
     -- always default to shop
 end
 
