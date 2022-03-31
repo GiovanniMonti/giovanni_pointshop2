@@ -170,13 +170,13 @@ function GPS:OpenMenu()
 
     function frame.loadoutSelect:Show()
         self[1]:Show()
-        self[2]:Show()
-        self[3]:Show()
+        --self[2]:Show()
+        --self[3]:Show()
     end
     function frame.loadoutSelect:Hide()
         self[1]:Hide()
-        self[2]:Hide()
-        self[3]:Hide()
+        --self[2]:Hide()
+        --self[3]:Hide()
     end
 
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
