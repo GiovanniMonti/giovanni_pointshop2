@@ -3,6 +3,17 @@ GPS.WepCategories = {}
 GPS.ItemsByCateogry = {}
 --* LocalPlayer():GetNWInt("GPS2_Points")
 
+GPS.Config = {
+    -- GPS.Config.LabelColor
+    ["LabelColor"] = Color(255, 255, 255),
+    ["LabelColorH"] = Color(61, 123, 224),
+    ["LabelColorS"] = Color(39, 94, 184),
+    ["LabelColorSH"] = Color(108, 130, 166),
+    ["BackgroundColor"] = Color(45, 45, 45, 240),
+    ["LineColor"] = Color(105, 105, 105),
+
+}
+
 function GPS:OpenMenu()
     -- todo add points counter text
     -- todo make admin menu
@@ -20,8 +31,8 @@ function GPS:OpenMenu()
         if self.CurTab == 0 then surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.9) end
     end
     function frame:Paint(w,h)
-        draw.RoundedBox(2, 0, 0, w, h, Color(45, 45, 45, 240))
-        surface.SetDrawColor( 105, 105, 105 )
+        draw.RoundedBox(2, 0, 0, w, h, GPS.Config.BackgroundColor)
+        surface.SetDrawColor( GPS.Config.LineColor )
         surface.DrawLine(self:GetWide() * 0.02 , self:GetTall() * 0.18, self:GetWide() * 0.98 , self:GetTall() * 0.18)
         self:AdditionalPaint(w,h)
     end
@@ -61,21 +72,63 @@ function GPS:OpenMenu()
     frame.closeBtn:SetSize( frame.closeBtn:GetWide()*0.4, frame.closeBtn:GetTall()*0.4 )
     frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.1, frame:GetTall()*0.01 )
 
-    frame.tabSelect = {}    -- todo make selection thingy
+    
+    frame.tabSelect = {}
+
     frame.tabSelect[1] = vgui.Create("DLabel", frame)
     frame.tabSelect[1]:SetFont("DermaLarge")
     frame.tabSelect[1]:SetText("Shop")
     frame.tabSelect[1]:SizeToContents()
-    frame.tabSelect[1]:SetPos(frame:GetWide()*0.25,frame:GetTall()*0.12)
+    frame.tabSelect[1]:SetPos(frame:GetWide()*0.25 - frame.tabSelect[1]:GetWide()/2 ,frame:GetTall()*0.12)
     frame.tabSelect[1]:SetMouseInputEnabled(true)
     frame.tabSelect[1].DoClick = function()
-        frame:ChangeToTab(1)
+        frame:ChangeToTab(0)
     end
     frame.tabSelect[1].OnCursorEntered = function(self)
-        self:SetTextColor(Color(61, 123, 224))
+        if self.Selected then
+
+        else
+            self:SetTextColor(GPS.Config.LabelColorH)
+        end
     end
     frame.tabSelect[1].OnCursorExited = function(self)
-        self:SetTextColor(Color(255, 255, 255))
+        if self.Selected then
+
+        else
+            self:SetTextColor(GPS.Config.LabelColor)
+        end
+    end
+
+    frame.tabSelect[2] = vgui.Create("DLabel", frame)
+    frame.tabSelect[2]:SetFont("DermaLarge")
+    frame.tabSelect[2]:SetText("Loadout")
+    frame.tabSelect[2]:SizeToContents()
+    frame.tabSelect[2]:SetPos(frame:GetWide()*0.40 - frame.tabSelect[2]:GetWide()/2,frame:GetTall()*0.12)
+    frame.tabSelect[2]:SetMouseInputEnabled(true)
+    frame.tabSelect[2].DoClick = function()
+        frame:ChangeToTab(1)
+    end
+    frame.tabSelect[2].OnCursorEntered = function(self)
+        self:SetTextColor(GPS.Config.LabelColorH)
+    end
+    frame.tabSelect[2].OnCursorExited = function(self)
+        self:SetTextColor(GPS.Config.LabelColor)
+    end
+    
+    frame.tabSelect[3] = vgui.Create("DLabel", frame)
+    frame.tabSelect[3]:SetFont("DermaLarge")
+    frame.tabSelect[3]:SetText("Admin")
+    frame.tabSelect[3]:SizeToContents()
+    frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.12)
+    frame.tabSelect[3]:SetMouseInputEnabled(true)
+    frame.tabSelect[3].DoClick = function()
+        frame:ChangeToTab(2)
+    end
+    frame.tabSelect[3].OnCursorEntered = function(self)
+        self:SetTextColor(GPS.Config.LabelColorH)
+    end
+    frame.tabSelect[3].OnCursorExited = function(self)
+        self:SetTextColor(GPS.Config.LabelColor)
     end
 
     frame.loadoutSelect = {} --TODO make the 3 cats individually in here
@@ -84,7 +137,7 @@ function GPS:OpenMenu()
     --todo actually make this and the other 2
 
     function frame.loadoutSelect:Show()
-       self[1]:Show()
+        self[1]:Show()
     end
     function frame.loadoutSelect:Hide()
         self[1]:Hide()
@@ -141,11 +194,11 @@ function GPS:OpenMenu()
             end
 
             function curItem.transactionButton:OnCursorEntered()
-                self:SetTextColor(Color(61, 123, 224))
+                self:SetTextColor(GPS.Config.LabelColorH)
             end
             function curItem.transactionButton:OnCursorExited()
                 self:Update() -- update after a click, should resolve visual bugs.
-                self:SetTextColor(Color(255, 255, 255))
+                self:SetTextColor(GPS.Config.LabelColor)
             end
 
             curItem.transactionButton:Update()
@@ -182,23 +235,23 @@ function GPS:OpenMenu()
             end
             function catLabel:OnCursorEntered()
                 if not self.selected then
-                self:SetTextColor(Color(108, 130, 166))
+                self:SetTextColor(GPS.Config.LabelColorSH)
                 else
-                    self:SetTextColor(Color(61, 123, 224))
+                    self:SetTextColor(GPS.Config.LabelColorH)
                 end
             end
             function catLabel:OnCursorExited()
                 if not self.selected then
-                self:SetTextColor(Color(255, 255, 255))
+                self:SetTextColor(GPS.Config.LabelColor)
                 else
-                    self:SetTextColor(Color(39, 94, 184))
+                    self:SetTextColor(GPS.Config.LabelColorS)
                 end
             end
             function catLabel:ToggleColor()
                 if not self.selected then
-                    self:SetTextColor(Color(255, 255, 255))
+                    self:SetTextColor(GPS.Config.LabelColor)
                 else
-                    self:SetTextColor(Color(39, 94, 184))
+                    self:SetTextColor(GPS.Config.LabelColorS)
                 end
             end
             function catLabel:OnDepressed()
@@ -215,7 +268,7 @@ function GPS:OpenMenu()
     frame.catSelect:Update()
     frame.itemShop:Update()
 
-    frame:ChangeToTab(1)
+    frame:ChangeToTab(0)
     -- always default to shop
 end
 
