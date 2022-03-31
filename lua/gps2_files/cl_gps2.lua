@@ -1,6 +1,7 @@
 GPS.ClItems = {}
 GPS.WepCategories = {}
 GPS.ItemsByCateogry = {}
+local GPSPlyData = {} -- for a couple separate things
 --* LocalPlayer():GetNWInt("GPS2_Points")
 
 GPS.Config = {
@@ -71,7 +72,6 @@ function GPS:OpenMenu()
     frame.closeBtn:SizeToContents()
     frame.closeBtn:SetSize( frame.closeBtn:GetWide()*0.4, frame.closeBtn:GetTall()*0.4 )
     frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.1, frame:GetTall()*0.01 )
-
     
     frame.tabSelect = {}
 
@@ -123,29 +123,30 @@ function GPS:OpenMenu()
             self:SetTextColor(GPS.Config.LabelColor)
         end
     end
-    
-    frame.tabSelect[3] = vgui.Create("DLabel", frame)
-    frame.tabSelect[3]:SetFont("DermaLarge")
-    frame.tabSelect[3]:SetText("Admin")
-    frame.tabSelect[3]:SizeToContents()
-    frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.12)
-    frame.tabSelect[3]:SetMouseInputEnabled(true)
-    frame.tabSelect[3].DoClick = function()
-        frame:ChangeToTab(2)
-        frame.tabSelect:UpdateColors()
-    end
-    frame.tabSelect[3].OnCursorEntered = function(self)
-        if frame.CurTab == 2 then
-            self:SetTextColor(GPS.Config.LabelColorSH)
-        else
-            self:SetTextColor(GPS.Config.LabelColorH)
+    if GPSPlyData.isadmin then
+        frame.tabSelect[3] = vgui.Create("DLabel", frame)
+        frame.tabSelect[3]:SetFont("DermaLarge")
+        frame.tabSelect[3]:SetText("Admin")
+        frame.tabSelect[3]:SizeToContents()
+        frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.12)
+        frame.tabSelect[3]:SetMouseInputEnabled(true)
+        frame.tabSelect[3].DoClick = function()
+            frame:ChangeToTab(2)
+            frame.tabSelect:UpdateColors()
         end
-    end
-    frame.tabSelect[3].OnCursorExited = function(self)
-        if frame.CurTab == 2 then
-            self:SetTextColor(GPS.Config.LabelColorS)
-        else
-            self:SetTextColor(GPS.Config.LabelColor)
+        frame.tabSelect[3].OnCursorEntered = function(self)
+            if frame.CurTab == 2 then
+                self:SetTextColor(GPS.Config.LabelColorSH)
+            else
+                self:SetTextColor(GPS.Config.LabelColorH)
+            end
+        end
+        frame.tabSelect[3].OnCursorExited = function(self)
+            if frame.CurTab == 2 then
+                self:SetTextColor(GPS.Config.LabelColorS)
+            else
+                self:SetTextColor(GPS.Config.LabelColor)
+            end
         end
     end
     function frame.tabSelect:UpdateColors()
@@ -383,8 +384,6 @@ net.Receive("GPS2_SendToClient",function()
         GPS.ItemsByCateogry[GPS.ClItems[id].Category][id] = GPS.ClItems[id]
     end
 end)
-
-local GPSPlyData = {}
 net.Receive("GPS2_OpenMenu", function()
     GPSPlyData.isadmin = net.ReadBool()
     GPSPlyData.isdonator = net.ReadBool()
