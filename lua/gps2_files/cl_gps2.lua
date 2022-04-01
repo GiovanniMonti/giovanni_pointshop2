@@ -164,20 +164,92 @@ function GPS:OpenMenu()
         end
     end
 
-    frame.loadoutSelect = {} --TODO make the 3 cats individually in here
+    frame.loadoutSelect = {}
     frame.loadoutSelect[1] = vgui.Create("DScrollPanel", frame)
-    frame.loadoutSelect[1]:SetPos(0,0)
-    --todo actually make this and the other 2
+    frame.loadoutSelect[1]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.78)
+    frame.loadoutSelect[1]:SetPos(frame:GetWide()*0.04,frame:GetTall()*0.2)
+    frame.loadoutSelect[1]:Hide()
+    --[[frame.loadoutSelect[1].Paint = function(self)
+        self:DrawOutlinedRect()
+    end --]]
+    frame.loadoutSelect[2] = vgui.Create("DScrollPanel", frame)
+    frame.loadoutSelect[2]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.78)
+    frame.loadoutSelect[2]:SetPos(frame:GetWide()*0.5 - frame.loadoutSelect[2]:GetWide()/2 ,frame:GetTall()*0.2)
+    frame.loadoutSelect[2]:Hide()
+    --[[frame.loadoutSelect[2].Paint = function(self)
+        self:DrawOutlinedRect()
+    end --]]
+    frame.loadoutSelect[3] = vgui.Create("DScrollPanel", frame)
+    frame.loadoutSelect[3]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.78)
+    frame.loadoutSelect[3]:SetPos(frame:GetWide()*0.67,frame:GetTall()*0.2)
+    frame.loadoutSelect[3]:Hide()
+    --[[frame.loadoutSelect[3].Paint = function(self)
+        self:DrawOutlinedRect()
+    end --]]
 
+    function frame.loadoutSelect:Update()
+        -- TODO make this a working selection screen
+        for id,weptbl in pairs(GPS.ClItems) do
+            local wepLabel = self[weptbl.Group]:Add("DLabel")
+            wepLabel:SetText( tostring(weptbl.PrintName) )
+            wepLabel:Dock( TOP )
+            wepLabel:SetFont("DermaLarge")
+            wepLabel:SizeToContents()
+            wepLabel:DockMargin(ScrW()*0.02, 0, 0, ScrH()/216)
+            wepLabel:SetMouseInputEnabled( true )
+            wepLabel.selected = false
+            function wepLabel:SelectThis()
+                if frame.loadoutSelect[weptbl.Group].selected == self then return end
+                frame.loadoutSelect[weptbl.Group].selected.selected = false
+                frame.loadoutSelect[weptbl.Group].selected = self
+                self.selected = true
+                --frame.loadoutSelect:Update()
+            end
+            function wepLabel:OnCursorEntered()
+                if not self.selected then
+                self:SetTextColor(GPS.Config.LabelColorSH)
+                else
+                    self:SetTextColor(GPS.Config.LabelColorH)
+                end
+            end
+            function wepLabel:OnCursorExited()
+                if not self.selected then
+                self:SetTextColor(GPS.Config.LabelColor)
+                else
+                    self:SetTextColor(GPS.Config.LabelColorS)
+                end
+            end
+            function wepLabel:ToggleColor()
+                if not self.selected then
+                    self:SetTextColor(GPS.Config.LabelColor)
+                else
+                    self:SetTextColor(GPS.Config.LabelColorS)
+                end
+            end
+            function wepLabel:OnDepressed()
+                if not self.selected then self:SelectThis() end
+                self:ToggleColor()
+            end
+            if not frame.loadoutSelect[weptbl.Group].selected then 
+                frame.loadoutSelect[weptbl.Group].selected = catLabel
+                wepLabel.selected = true
+                wepLabel:ToggleColor()
+            end
+
+        end
+    end
+
+    --todo complete this
     function frame.loadoutSelect:Show()
         self[1]:Show()
-        --self[2]:Show()
-        --self[3]:Show()
+        self[2]:Show()
+        self[3]:Show()
+        self:Update()
     end
     function frame.loadoutSelect:Hide()
         self[1]:Hide()
-        --self[2]:Hide()
-        --self[3]:Hide()
+        self[2]:Hide()
+        self[3]:Hide()
     end
 
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
