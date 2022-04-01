@@ -29,7 +29,16 @@ function GPS:OpenMenu()
     frame.CurTab = 0
 
     function frame:AdditionalPaint(w,h)
-        if self.CurTab == 0 then surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.9) end
+        if self.CurTab == 0 then 
+            surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.9)
+            return 
+        end
+        if self.CurTab == 1 then
+            surface.SetDrawColor(GPS.Config.LineColor)
+            local x1,x2 = self:GetWide()*.34, self:GetWide()*.656
+            surface.DrawLine(x1, self:GetTall()*.2, x1, self:GetTall()*.99)
+            surface.DrawLine(x2, self:GetTall()*.2, x2, self:GetTall()*.99)
+        end
     end
     function frame:Paint(w,h)
         draw.RoundedBox(2, 0, 0, w, h, GPS.Config.BackgroundColor)
@@ -164,77 +173,116 @@ function GPS:OpenMenu()
         end
     end
 
+    frame.groupLabels = {}
+    --ugly AF but it works
+    frame.groupLabels[1] = vgui.Create("DLabel", frame)
+    frame.groupLabels[2] = vgui.Create("DLabel", frame)
+    frame.groupLabels[3] = vgui.Create("DLabel", frame)
+    frame.groupLabels[1]:SetFont("DermaLarge")
+    frame.groupLabels[2]:SetFont("DermaLarge")
+    frame.groupLabels[3]:SetFont("DermaLarge")
+    frame.groupLabels[1]:SetText("Primaries")
+    frame.groupLabels[2]:SetText("Secondaries")
+    frame.groupLabels[3]:SetText("Misc.")
+    frame.groupLabels[1]:SizeToContents()
+    frame.groupLabels[2]:SizeToContents()
+    frame.groupLabels[3]:SizeToContents()
+    frame.groupLabels[1]:SetPos(frame:GetWide()/6- frame.groupLabels[1]:GetWide()/2,frame:GetTall()*.2)
+    frame.groupLabels[2]:SetPos(frame:GetWide()*.5-frame.groupLabels[2]:GetWide()/2,frame:GetTall()*.2)
+    frame.groupLabels[3]:SetPos(frame:GetWide()*(5/6)-frame.groupLabels[3]:GetWide()/2,frame:GetTall()*.2)
+    function frame.groupLabels:Show()
+        self[1]:Show()
+        self[2]:Show()
+        self[3]:Show()
+    end
+    function frame.groupLabels:Hide()
+        self[1]:Hide()
+        self[2]:Hide()
+        self[3]:Hide()
+    end
+    frame.groupLabels:Hide()
+
     frame.loadoutSelect = {}
     frame.loadoutSelect[1] = vgui.Create("DScrollPanel", frame)
-    frame.loadoutSelect[1]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.78)
-    frame.loadoutSelect[1]:SetPos(frame:GetWide()*0.04,frame:GetTall()*0.2)
+    frame.loadoutSelect[1]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
+    frame.loadoutSelect[1]:SetPos(frame:GetWide()*0.04,frame:GetTall()*0.3)
     frame.loadoutSelect[1]:Hide()
-    --[[frame.loadoutSelect[1].Paint = function(self)
+    --[[
+    frame.loadoutSelect[1].Paint = function(self)
         self:DrawOutlinedRect()
     end --]]
     frame.loadoutSelect[2] = vgui.Create("DScrollPanel", frame)
-    frame.loadoutSelect[2]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.78)
-    frame.loadoutSelect[2]:SetPos(frame:GetWide()*0.5 - frame.loadoutSelect[2]:GetWide()/2 ,frame:GetTall()*0.2)
+    frame.loadoutSelect[2]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
+    frame.loadoutSelect[2]:SetPos(frame:GetWide()*0.5 - frame.loadoutSelect[2]:GetWide()/2 ,frame:GetTall()*0.3)
     frame.loadoutSelect[2]:Hide()
-    --[[frame.loadoutSelect[2].Paint = function(self)
+    --[[
+    frame.loadoutSelect[2].Paint = function(self)
         self:DrawOutlinedRect()
     end --]]
     frame.loadoutSelect[3] = vgui.Create("DScrollPanel", frame)
-    frame.loadoutSelect[3]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.78)
-    frame.loadoutSelect[3]:SetPos(frame:GetWide()*0.67,frame:GetTall()*0.2)
+    frame.loadoutSelect[3]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
+    frame.loadoutSelect[3]:SetPos(frame:GetWide()*0.67,frame:GetTall()*0.3)
     frame.loadoutSelect[3]:Hide()
-    --[[frame.loadoutSelect[3].Paint = function(self)
+    --[[
+    frame.loadoutSelect[3].Paint = function(self)
         self:DrawOutlinedRect()
     end --]]
 
     function frame.loadoutSelect:Update()
-        -- TODO make this a working selection screen
-        for id,weptbl in pairs(GPS.ClItems) do
-            local wepLabel = self[weptbl.Group]:Add("DLabel")
-            wepLabel:SetText( tostring(weptbl.PrintName) )
-            wepLabel:Dock( TOP )
-            wepLabel:SetFont("DermaLarge")
-            wepLabel:SizeToContents()
-            wepLabel:DockMargin(ScrW()*0.02, 0, 0, ScrH()/216)
-            wepLabel:SetMouseInputEnabled( true )
-            wepLabel.selected = false
-            function wepLabel:SelectThis()
-                if frame.loadoutSelect[weptbl.Group].selected == self then return end
-                frame.loadoutSelect[weptbl.Group].selected.selected = false
-                frame.loadoutSelect[weptbl.Group].selected = self
-                self.selected = true
-                --frame.loadoutSelect:Update()
+        -- TODO complete this
+        frame.loadoutSelect[1]:Clear()
+        frame.loadoutSelect[2]:Clear()
+        frame.loadoutSelect[3]:Clear()
+        for id,tbl in pairs(GPS.ClItems) do
+            local curItem = self[tbl.Group]:Add("DPanel")
+            curItem:Dock( TOP )
+            curItem:SetSize( self[tbl.Group]:GetWide()*0.95,  self[tbl.Group]:GetTall()*0.2)
+
+            function curItem:Paint()
+                surface.SetDrawColor( GPS.Config.LineColor )
+                self:DrawOutlinedRect()
             end
-            function wepLabel:OnCursorEntered()
-                if not self.selected then
-                self:SetTextColor(GPS.Config.LabelColorSH)
+
+            curItem.nameLabel = vgui.Create("DLabel", curItem)
+            curItem.nameLabel:SetFont("DermaLarge")
+            curItem.nameLabel:SetText(tbl.PrintName)
+            curItem.nameLabel:SizeToContents()
+            curItem.nameLabel:SetPos(curItem:GetWide()*0.5,curItem:GetTall()*0.1)
+
+            curItem.selectBtn = vgui.Create("DLabel", curItem)
+            curItem.selectBtn:SetFont("DermaLarge")
+            curItem.selectBtn:SetMouseInputEnabled(true)
+            curItem.selectBtn:SetText("Sample")
+            curItem.selectBtn:SizeToContents()
+            curItem.selectBtn:SetPos(curItem:GetWide()*0.5 , curItem:GetTall()*.99 - curItem.selectBtn:GetTall() )
+            function curItem.selectBtn:Update()
+                if GPS:IsSelected(id) then
+                    self:SetText( "Deselect" )
                 else
-                    self:SetTextColor(GPS.Config.LabelColorH)
+                    self:SetText( "Select" )
                 end
             end
-            function wepLabel:OnCursorExited()
-                if not self.selected then
+            function curItem.selectBtn:DoClick()
+                GPS.ClientShopReq(GPS.NET_ENUM.SELECT, {id})
+            end
+
+            function curItem.selectBtn:OnCursorEntered()
+                self:SetTextColor(GPS.Config.LabelColorH)
+            end
+            function curItem.selectBtn:OnCursorExited()
+                self:Update() -- update after a click, should resolve visual bugs.
                 self:SetTextColor(GPS.Config.LabelColor)
-                else
-                    self:SetTextColor(GPS.Config.LabelColorS)
-                end
             end
-            function wepLabel:ToggleColor()
-                if not self.selected then
-                    self:SetTextColor(GPS.Config.LabelColor)
-                else
-                    self:SetTextColor(GPS.Config.LabelColorS)
-                end
-            end
-            function wepLabel:OnDepressed()
-                if not self.selected then self:SelectThis() end
-                self:ToggleColor()
-            end
-            if not frame.loadoutSelect[weptbl.Group].selected then 
-                frame.loadoutSelect[weptbl.Group].selected = catLabel
-                wepLabel.selected = true
-                wepLabel:ToggleColor()
-            end
+
+            curItem.modelPanel = vgui.Create("DModelPanel", curItem)
+            curItem.modelPanel:SetModel( tbl.Model)
+            curItem.modelPanel:SetSize(curItem:GetTall()*0.9,curItem:GetTall()*0.9)
+            local min,max = curItem.modelPanel.Entity:GetRenderBounds();
+			curItem.modelPanel:SetCamPos( min:Distance( max ) * Vector( .55, .55, .25 ) )
+			curItem.modelPanel:SetLookAt( ( min + max ) / 2 )
+			curItem.modelPanel.LayoutEntity = function() end
+
+            curItem.selectBtn:Update()
 
         end
     end
@@ -245,11 +293,13 @@ function GPS:OpenMenu()
         self[2]:Show()
         self[3]:Show()
         self:Update()
+        frame.groupLabels:Show()
     end
     function frame.loadoutSelect:Hide()
         self[1]:Hide()
         self[2]:Hide()
         self[3]:Hide()
+        frame.groupLabels:Hide()
     end
 
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
@@ -391,6 +441,18 @@ GPS.NET_ENUM = {
     ["EDIT"] = 4,
     ["ADD"] = 4,
 }
+
+GPS.SEL_NW = {
+    [1] = "GPS::SPRIM",
+    [2] = "GPS::SSEC",
+    [3] = "GPS::SMISC"
+}
+
+function GPS:IsSelected(id)
+    if not self.ClItems[id] then return end
+    if self.SEL_NW[self.ClItems[id].Group] and LocalPlayer():GetNWInt(self.SEL_NW[self.ClItems[id].Group],-1) == self.ClItems[id] then return true end
+    return false
+end
 
 function GPS.ClientShopReq(requestType, args)
     --[[
