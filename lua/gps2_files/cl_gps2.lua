@@ -176,15 +176,20 @@ function GPS:OpenMenu()
 
     frame.adminPanel = {}
 
-    frame.adminPanel.
+    frame.adminPanel.nameEntry = vgui.Create("DTextEntry", frame)
+    frame.adminPanel.nameEntry:SetPos(frame:GetWide()*.1,frame:GetTall()*.2)
+    frame.adminPanel.nameEntry:SetSize(frame:GetWide()*.2,frame:GetTall()*.04)
+    frame.adminPanel.nameEntry:SetPlaceholderText("Weapon Classname here")
 
     function frame.adminPanel:Hide()
-
+        self.nameEntry:Hide()
     end
 
     function frame.adminPanel:Show()
-
+        self.nameEntry:Show()
     end
+
+    frame.adminPanel:Hide()
 
     --* LOADOUT CODE STARTS
 
@@ -302,7 +307,6 @@ function GPS:OpenMenu()
         end
     end
 
-    --todo complete this
     function frame.loadoutSelect:Show()
         self[1]:Show()
         self[2]:Show()
