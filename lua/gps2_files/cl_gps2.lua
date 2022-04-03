@@ -1,7 +1,7 @@
 GPS.ClItems = {}
 GPS.WepCategories = {}
 GPS.ItemsByCateogry = {}
-local GPSPlyData = {} -- for a couple separate things
+local GPSPlyData = {} -- visual checks
 --* LocalPlayer():GetNWInt("GPS2_Points")
 
 GPS.Config = {
@@ -12,13 +12,11 @@ GPS.Config = {
     ["LabelColorSH"] = Color(108, 130, 166),
     ["BackgroundColor"] = Color(45, 45, 45, 240),
     ["LineColor"] = Color(105, 105, 105),
-
 }
 
 function GPS:OpenMenu()
     -- todo add points counter text
     -- todo make admin menu
-    -- todo make selection menu
     local frame = vgui.Create("DFrame")
     frame:SetSize(ScrW()/2,ScrH()/2)
     frame:Center()
@@ -60,7 +58,7 @@ function GPS:OpenMenu()
         elseif self.CurTab == 1 then
             self.loadoutSelect:Hide()
         else 
-            -- hide admin
+            frame.adminPanel:Hide()
         end
 
         if newTab == 0 then
@@ -69,7 +67,8 @@ function GPS:OpenMenu()
         elseif newTab == 1 then
             self.loadoutSelect:Show()
         else 
-            -- show admin
+            if not GPSPlyData.isadmin then return end
+            frame.adminPanel:Show()
         end
         self.CurTab = newTab
     end
@@ -163,15 +162,31 @@ function GPS:OpenMenu()
         self[curtab]:SetTextColor(GPS.Config.LabelColorS)
         if curtab == 1 then
             self[2]:SetTextColor(GPS.Config.LabelColor)
-            self[3]:SetTextColor(GPS.Config.LabelColor)
+            if GPSPlyData.isadmin then self[3]:SetTextColor(GPS.Config.LabelColor) end
         elseif curtab == 2 then
             self[1]:SetTextColor(GPS.Config.LabelColor)
-            self[3]:SetTextColor(GPS.Config.LabelColor)
+            if GPSPlyData.isadmin then self[3]:SetTextColor(GPS.Config.LabelColor) end
         else
             self[1]:SetTextColor(GPS.Config.LabelColor)
             self[2]:SetTextColor(GPS.Config.LabelColor)
         end
     end
+
+    --* ADMIN PANEL CODE STARTS
+
+    frame.adminPanel = {}
+
+    frame.adminPanel.
+
+    function frame.adminPanel:Hide()
+
+    end
+
+    function frame.adminPanel:Show()
+
+    end
+
+    --* LOADOUT CODE STARTS
 
     frame.groupLabels = {}
     --ugly AF but it works
@@ -302,10 +317,13 @@ function GPS:OpenMenu()
         frame.groupLabels:Hide()
     end
 
+    --* SHOP CODE STARTS
+
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
     frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.22)
     frame.itemShop:SetSize(frame:GetWide()*0.62,frame:GetTall()*0.76)
     function frame.itemShop:Update()
+        if table.IsEmpty( GPS.ItemsByCateogry ) then return end
         for id,tbl in pairs(GPS.ItemsByCateogry[frame.catSelect.GetSelected():GetText()]) do
             local curItem = self:Add("DPanel")
             curItem:Dock( TOP )
@@ -424,6 +442,7 @@ function GPS:OpenMenu()
             end
         end
     end
+
     frame.catSelect:Update()
     frame.itemShop:Update()
     frame:ChangeToTab(0)
@@ -431,7 +450,7 @@ function GPS:OpenMenu()
     -- always default to shop
 end
 
-------------------- net code below
+-------------------* net code below
 
 GPS.NET_ENUM = {
     ["WEPTBL"] = 0,
@@ -466,7 +485,7 @@ function GPS.ClientShopReq(requestType, args)
     net.WriteUInt(requestType, 4)
 
     if requestType == 0 then
-        
+        -- just needs req type
     elseif requestType == 1 then
         net.WriteUInt(args[1], 8)
     elseif requestType == 2 then
