@@ -1,6 +1,7 @@
 GPS.ClItems = {}
 GPS.WepCategories = {}
 GPS.ItemsByCateogry = {}
+GPS.ItemsByName = {}
 local GPSPlyData = {} -- visual checks
 --* LocalPlayer():GetNWInt("GPS2_Points")
 
@@ -176,17 +177,130 @@ function GPS:OpenMenu()
 
     frame.adminPanel = {}
 
+    frame.adminPanel.addText = vgui.Create("DLabel", frame)
+    frame.adminPanel.addText:SetText("Add/Edit Weapon")
+    frame.adminPanel.addText:SizeToContents()
+    frame.adminPanel.addText:SetPos(frame:GetWide()*.09 - frame.adminPanel.addText:GetWide()*.5 ,frame:GetTall()*.2)
+
     frame.adminPanel.nameEntry = vgui.Create("DTextEntry", frame)
-    frame.adminPanel.nameEntry:SetPos(frame:GetWide()*.1,frame:GetTall()*.2)
-    frame.adminPanel.nameEntry:SetSize(frame:GetWide()*.2,frame:GetTall()*.04)
-    frame.adminPanel.nameEntry:SetPlaceholderText("Weapon Classname here")
+    frame.adminPanel.nameEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.25)
+    frame.adminPanel.nameEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.nameEntry:SetPlaceholderText("Weapon classname here")
+    frame.adminPanel.nameEntry.OnEnter = function(self,value)
+        frame.adminPanel.printEntry:Clear()
+        frame.adminPanel.priceEntry:Clear()
+        frame.adminPanel.categoryEntry:Clear()
+        frame.adminPanel.modelEntry:Clear()
+        frame.adminPanel.groupSelect:Clear()
+        --table.Empty(frame.adminPanel.teamSelect.temptable)
+        if GPS.ItemsByName[value] then
+            frame.adminPanel.selected = GPS.ItemsByName[value]
+        end
+    end
+
+    frame.adminPanel.printEntry = vgui.Create("DTextEntry", frame)
+    frame.adminPanel.printEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.30)
+    frame.adminPanel.printEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.printEntry:SetPlaceholderText("Weapon printname here")
+    frame.adminPanel.printEntry.OnGetFocus = function(self)
+        if frame.adminPanel.selected then 
+            self:SetValue( GPS.ClItems[frame.adminPanel.selected].PrintName )
+        end
+    end
+    
+    frame.adminPanel.priceEntry = vgui.Create("DTextEntry", frame)
+    frame.adminPanel.priceEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.35)
+    frame.adminPanel.priceEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.priceEntry:SetPlaceholderText("Weapon price here")
+    frame.adminPanel.priceEntry.OnGetFocus = function(self)
+        if frame.adminPanel.selected then 
+            self:SetValue( GPS.ClItems[frame.adminPanel.selected].Price )
+        end
+    end
+
+    frame.adminPanel.categoryEntry = vgui.Create("DTextEntry", frame)
+    frame.adminPanel.categoryEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.40)
+    frame.adminPanel.categoryEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.categoryEntry:SetPlaceholderText("Weapon category here")
+    frame.adminPanel.categoryEntry.OnGetFocus = function(self)
+        if frame.adminPanel.selected then 
+            self:SetValue( GPS.ClItems[frame.adminPanel.selected].Category )
+        end
+    end
+
+    frame.adminPanel.modelEntry = vgui.Create("DTextEntry", frame)
+    frame.adminPanel.modelEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.45)
+    frame.adminPanel.modelEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.modelEntry:SetPlaceholderText("Weapon model here")
+    frame.adminPanel.modelEntry.OnGetFocus = function(self)
+        if frame.adminPanel.selected then 
+            self:SetValue( GPS.ClItems[frame.adminPanel.selected].Model )
+        end
+    end
+
+    frame.adminPanel.groupSelect = vgui.Create("DComboBox", frame)
+    frame.adminPanel.groupSelect:SetPos(frame:GetWide()*.02,frame:GetTall()*.5)
+    frame.adminPanel.groupSelect:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.groupSelect:SetSortItems(false)
+    frame.adminPanel.groupSelect:SetValue( "Pick a group" )
+    frame.adminPanel.groupSelect:AddChoice( "Primaries",1 )
+    frame.adminPanel.groupSelect:AddChoice( "Secondaries",2 )
+    frame.adminPanel.groupSelect:AddChoice( "Misc.",3 )
+    frame.adminPanel.groupSelect.OnMenuOpened = function( self, pnl )
+        if frame.adminPanel.selected then
+            self:ChooseOptionID(GPS.ClItems[frame.adminPanel.selected].Group)
+        end
+    end
+
+    frame.adminPanel.teamSelect = vgui.Create("DButton", frame)
+    frame.adminPanel.teamSelect:SetPos(frame:GetWide()*.02,frame:GetTall()*.55)
+    frame.adminPanel.teamSelect:SetSize(frame:GetWide()*.15,frame:GetTall()*.06)
+    frame.adminPanel.teamSelect:SetText("Manage Teams")
+    frame.adminPanel.teamSelect.DoClick = function(self) 
+    local allSelected
+        if frame.adminPanel.selected then 
+            self.temptable = GPS.ClItems[frame.adminPanel.selected].Teams
+            if not self.temptable then 
+                allSelected = true
+            end
+        else
+            self.temptable = {}
+        end
+
+        local TeamsMenu = DermaMenu()
+        for k,_ in pairs( team.GetAllTeams() ) do
+            if allSelected then self.temptable[ k ] = true end
+            local option = TeamsMenu:AddOption(team.GetName(k), function()
+                if self.temptable[ k ] then self.temptable[ k ] = nil
+                else self.temptable[ k ] = true end
+            end)
+            if self.temptable[ k ] then
+                option:SetIcon("icon16/tick.png")
+            end
+        end
+        TeamsMenu:Open()
+    end
 
     function frame.adminPanel:Hide()
+        self.addText:Hide()
         self.nameEntry:Hide()
+        self.printEntry:Hide()
+        self.priceEntry:Hide()
+        self.categoryEntry:Hide()
+        self.modelEntry:Hide()
+        self.groupSelect:Hide()
+        self.teamSelect:Hide()
     end
 
     function frame.adminPanel:Show()
+        self.addText:Show()
         self.nameEntry:Show()
+        self.printEntry:Show()
+        self.priceEntry:Show()
+        self.categoryEntry:Show()
+        self.modelEntry:Show()
+        self.groupSelect:Show()
+        self.teamSelect:Show()
     end
 
     frame.adminPanel:Hide()
@@ -449,7 +563,7 @@ function GPS:OpenMenu()
 
     frame.catSelect:Update()
     frame.itemShop:Update()
-    frame:ChangeToTab(0)
+    frame:ChangeToTab(2) --todo set back to 0
     frame.tabSelect:UpdateColors()
     -- always default to shop
 end
@@ -508,6 +622,8 @@ end
 net.Receive("GPS2_SendToClient",function()
     table.Empty( GPS.WepCategories )
     table.Empty( GPS.ClItems )
+    table.Empty( GPS.ItemsByCateogry )
+    table.Empty( GPS.ItemsByName )
     local nItems = net.ReadUInt(8)
     for i = 1, nItems do
         local id = net.ReadUInt(8)
@@ -537,7 +653,7 @@ net.Receive("GPS2_SendToClient",function()
         end
 
         ::cont::
-
+        GPS.ItemsByName[GPS.ClItems[id].ClassName] = id
         GPS.ItemsByCateogry[GPS.ClItems[id].Category][id] = GPS.ClItems[id]
     end
 end)
