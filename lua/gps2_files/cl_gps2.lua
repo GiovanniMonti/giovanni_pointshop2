@@ -177,8 +177,21 @@ function GPS:OpenMenu()
 
     frame.adminPanel = {}
 
+    function frame.adminPanel:SendData()
+        if not self.nameEntry:GetValue() or string.Trim(self.nameEntry:GetValue()) == '' then return end
+        local temptable = {}
+        temptable.Class = self.nameEntry:GetValue()
+        temptable.Print = self.printEntry:GetValue() or temptable.Class
+        temptable.Price = self.priceEntry:GetValue()
+        temptable.Category = self.categoryEntry:GetValue()
+        temptable.Model = self.modelEntry:GetValue()
+        temptable.Group = self.groupSelect:GetOptionData()
+        temptable.Teams = self.teamSelect.temptable
+        PrintTable(temptable)
+    end
+    
     frame.adminPanel.addText = vgui.Create("DLabel", frame)
-    frame.adminPanel.addText:SetText("Add/Edit Weapon")
+    frame.adminPanel.addText:SetText("Add New:")
     frame.adminPanel.addText:SizeToContents()
     frame.adminPanel.addText:SetPos(frame:GetWide()*.09 - frame.adminPanel.addText:GetWide()*.5 ,frame:GetTall()*.2)
 
@@ -191,10 +204,18 @@ function GPS:OpenMenu()
         frame.adminPanel.priceEntry:Clear()
         frame.adminPanel.categoryEntry:Clear()
         frame.adminPanel.modelEntry:Clear()
-        frame.adminPanel.groupSelect:Clear()
-        --table.Empty(frame.adminPanel.teamSelect.temptable)
+        if frame.adminPanel.groupSelect:GetSelected() then frame.adminPanel.groupSelect:SetValue( "Pick a group" ) end
+
         if GPS.ItemsByName[value] then
             frame.adminPanel.selected = GPS.ItemsByName[value]
+        else
+            for n,tbl in pairs(weapons.GetList()) do
+                if tbl.ClassName == frame.adminPanel.nameEntry:GetValue() then
+                    frame.adminPanel.modelEntry:SetText(tbl.WorldModel or '')
+                    frame.adminPanel.printEntry:SetText(tbl.PrintName or '')
+                    break
+                end
+            end
         end
     end
 
@@ -257,6 +278,7 @@ function GPS:OpenMenu()
     frame.adminPanel.teamSelect:SetSize(frame:GetWide()*.15,frame:GetTall()*.06)
     frame.adminPanel.teamSelect:SetText("Manage Teams")
     frame.adminPanel.teamSelect.DoClick = function(self) 
+        if not frame.adminPanel.nameEntry:GetValue() or frame.adminPanel.nameEntry:GetValue() == '' then return end
     local allSelected
         if frame.adminPanel.selected then 
             self.temptable = GPS.ClItems[frame.adminPanel.selected].Teams
@@ -264,7 +286,7 @@ function GPS:OpenMenu()
                 allSelected = true
             end
         else
-            self.temptable = {}
+            self.temptable = self.temptable or {}
         end
 
         local TeamsMenu = DermaMenu()
@@ -279,6 +301,14 @@ function GPS:OpenMenu()
             end
         end
         TeamsMenu:Open()
+    end
+
+    frame.adminPanel.submitButton = vgui.Create("DButton",frame)
+    frame.adminPanel.submitButton:SetPos(frame:GetWide()*.02,frame:GetTall()*.62)
+    frame.adminPanel.submitButton:SetSize(frame:GetWide()*.15,frame:GetTall()*.06)
+    frame.adminPanel.submitButton:SetText("Submit item changes")
+    frame.adminPanel.submitButton.DoClick = function()
+        frame.adminPanel:SendData()
     end
 
     function frame.adminPanel:Hide()
