@@ -191,13 +191,15 @@ function GPS:OpenMenu()
     end
     
     frame.adminPanel.addText = vgui.Create("DLabel", frame)
-    frame.adminPanel.addText:SetText("Add New:")
+    frame.adminPanel.addText:SetText("Add New")
+    frame.adminPanel.addText:SetFont("GPS::MenuFont")
     frame.adminPanel.addText:SizeToContents()
-    frame.adminPanel.addText:SetPos(frame:GetWide()*.09 - frame.adminPanel.addText:GetWide()*.5 ,frame:GetTall()*.2)
+    frame.adminPanel.addText:SetPos(frame:GetWide()*.08 ,frame:GetTall()*.2)
 
     frame.adminPanel.nameEntry = vgui.Create("DTextEntry", frame)
     frame.adminPanel.nameEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.25)
-    frame.adminPanel.nameEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.nameEntry:SetSize(frame:GetWide()*.2,frame:GetTall()*.05)
+    frame.adminPanel.nameEntry:SetFont("GPS::MenuFontS")
     frame.adminPanel.nameEntry:SetPlaceholderText("Weapon classname here")
     frame.adminPanel.nameEntry.OnEnter = function(self,value)
         frame.adminPanel.printEntry:Clear()
@@ -220,8 +222,9 @@ function GPS:OpenMenu()
     end
 
     frame.adminPanel.printEntry = vgui.Create("DTextEntry", frame)
-    frame.adminPanel.printEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.30)
-    frame.adminPanel.printEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.printEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.31)
+    frame.adminPanel.printEntry:SetSize(frame:GetWide()*.2,frame:GetTall()*.05)
+    frame.adminPanel.printEntry:SetFont("GPS::MenuFontS")
     frame.adminPanel.printEntry:SetPlaceholderText("Weapon printname here")
     frame.adminPanel.printEntry.OnGetFocus = function(self)
         if frame.adminPanel.selected then 
@@ -230,8 +233,9 @@ function GPS:OpenMenu()
     end
     
     frame.adminPanel.priceEntry = vgui.Create("DTextEntry", frame)
-    frame.adminPanel.priceEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.35)
-    frame.adminPanel.priceEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.priceEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.37)
+    frame.adminPanel.priceEntry:SetSize(frame:GetWide()*.2,frame:GetTall()*.05)
+    frame.adminPanel.priceEntry:SetFont("GPS::MenuFontS")
     frame.adminPanel.priceEntry:SetPlaceholderText("Weapon price here")
     frame.adminPanel.priceEntry.OnGetFocus = function(self)
         if frame.adminPanel.selected then 
@@ -240,8 +244,9 @@ function GPS:OpenMenu()
     end
 
     frame.adminPanel.categoryEntry = vgui.Create("DTextEntry", frame)
-    frame.adminPanel.categoryEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.40)
-    frame.adminPanel.categoryEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.categoryEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.43)
+    frame.adminPanel.categoryEntry:SetSize(frame:GetWide()*.2,frame:GetTall()*.05)
+    frame.adminPanel.categoryEntry:SetFont("GPS::MenuFontS")
     frame.adminPanel.categoryEntry:SetPlaceholderText("Weapon category here")
     frame.adminPanel.categoryEntry.OnGetFocus = function(self)
         if frame.adminPanel.selected then 
@@ -250,8 +255,9 @@ function GPS:OpenMenu()
     end
 
     frame.adminPanel.modelEntry = vgui.Create("DTextEntry", frame)
-    frame.adminPanel.modelEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.45)
-    frame.adminPanel.modelEntry:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.modelEntry:SetPos(frame:GetWide()*.02,frame:GetTall()*.49)
+    frame.adminPanel.modelEntry:SetSize(frame:GetWide()*.2,frame:GetTall()*.05)
+    frame.adminPanel.modelEntry:SetFont("GPS::MenuFontS")
     frame.adminPanel.modelEntry:SetPlaceholderText("Weapon model here")
     frame.adminPanel.modelEntry.OnGetFocus = function(self)
         if frame.adminPanel.selected then 
@@ -260,9 +266,10 @@ function GPS:OpenMenu()
     end
 
     frame.adminPanel.groupSelect = vgui.Create("DComboBox", frame)
-    frame.adminPanel.groupSelect:SetPos(frame:GetWide()*.02,frame:GetTall()*.5)
-    frame.adminPanel.groupSelect:SetSize(frame:GetWide()*.15,frame:GetTall()*.04)
+    frame.adminPanel.groupSelect:SetPos(frame:GetWide()*.02,frame:GetTall()*.55)
+    frame.adminPanel.groupSelect:SetSize(frame:GetWide()*.2,frame:GetTall()*.05)
     frame.adminPanel.groupSelect:SetSortItems(false)
+    frame.adminPanel.groupSelect:SetFont("GPS::MenuFontS")
     frame.adminPanel.groupSelect:SetValue( "Pick a group" )
     frame.adminPanel.groupSelect:AddChoice( "Primaries",1 )
     frame.adminPanel.groupSelect:AddChoice( "Secondaries",2 )
@@ -274,8 +281,9 @@ function GPS:OpenMenu()
     end
 
     frame.adminPanel.teamSelect = vgui.Create("DButton", frame)
-    frame.adminPanel.teamSelect:SetPos(frame:GetWide()*.02,frame:GetTall()*.55)
-    frame.adminPanel.teamSelect:SetSize(frame:GetWide()*.15,frame:GetTall()*.06)
+    frame.adminPanel.teamSelect:SetPos(frame:GetWide()*.02,frame:GetTall()*.61)
+    frame.adminPanel.teamSelect:SetSize(frame:GetWide()*.2,frame:GetTall()*.06)
+    frame.adminPanel.teamSelect:SetFont("GPS::MenuFontS")
     frame.adminPanel.teamSelect:SetText("Manage Teams")
     frame.adminPanel.teamSelect.DoClick = function(self) 
         if not frame.adminPanel.nameEntry:GetValue() or frame.adminPanel.nameEntry:GetValue() == '' then return end
@@ -304,8 +312,9 @@ function GPS:OpenMenu()
     end
 
     frame.adminPanel.submitButton = vgui.Create("DButton",frame)
-    frame.adminPanel.submitButton:SetPos(frame:GetWide()*.02,frame:GetTall()*.62)
-    frame.adminPanel.submitButton:SetSize(frame:GetWide()*.15,frame:GetTall()*.06)
+    frame.adminPanel.submitButton:SetPos(frame:GetWide()*.02,frame:GetTall()*.68)
+    frame.adminPanel.submitButton:SetSize(frame:GetWide()*.2,frame:GetTall()*.06)
+    frame.adminPanel.submitButton:SetFont("GPS::MenuFontS")
     frame.adminPanel.submitButton:SetText("Submit item changes")
     frame.adminPanel.submitButton.DoClick = function()
         frame.adminPanel:SendData()
