@@ -211,14 +211,22 @@ function GPS:OpenMenu()
         self:DrawOutlinedRect()
     end
     frame.adminPanel.nameEntry.OnEnter = function(self,value)
+        frame.adminPanel.teamSelect.temptable = {}
         frame.adminPanel.printEntry:Clear()
         frame.adminPanel.priceEntry:Clear()
         frame.adminPanel.categoryEntry:Clear()
         frame.adminPanel.modelEntry:Clear()
-        if frame.adminPanel.groupSelect:GetSelected() then frame.adminPanel.groupSelect:SetValue( "Pick a group" ) end
+        frame.adminPanel.groupSelect:SetValue( "Pick a group" )
 
         if GPS.ItemsByName[value] then
             frame.adminPanel.selected = GPS.ItemsByName[value]
+            frame.adminPanel.groupSelect:ChooseOptionID(GPS.ClItems[frame.adminPanel.selected].Group)
+            frame.adminPanel.priceEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].Price )
+            frame.adminPanel.printEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].PrintName )
+            frame.adminPanel.categoryEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].Category )
+            frame.adminPanel.modelEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].Model )
+
+
         else
             for n,tbl in pairs(weapons.GetList()) do
                 if tbl.ClassName == frame.adminPanel.nameEntry:GetValue() then
@@ -230,6 +238,16 @@ function GPS:OpenMenu()
         end
     end
 
+    frame.adminPanel.wepSelect = vgui.Create("DComboBox", frame)
+    frame.adminPanel.wepSelect:SetPos(leftMar, topMar )
+    frame.adminPanel.wepSelect:SetSize( panelWide, panelTall)
+    frame.adminPanel.wepSelect:SetFont("GPS::MenuFont")
+    frame.adminPanel.wepSelect:Hide()
+    frame.adminPanel.wepSelect.OnSelect = function(self,ind,val,dat)
+        frame.adminPanel.nameEntry:OnEnter(val)
+    end
+    
+
     frame.adminPanel.printEntry = vgui.Create("DTextEntry", frame)
     frame.adminPanel.printEntry:SetPos(leftMar,topMar + (panelTall + spacer))
     frame.adminPanel.printEntry:SetSize( panelWide, panelTall)
@@ -240,11 +258,6 @@ function GPS:OpenMenu()
     frame.adminPanel.printEntry.PaintOver = function(self, w,h)
         surface.SetDrawColor( GPS.Config.LineColor )
         self:DrawOutlinedRect()
-    end
-    frame.adminPanel.printEntry.OnGetFocus = function(self)
-        if frame.adminPanel.selected then 
-            self:SetValue( GPS.ClItems[frame.adminPanel.selected].PrintName )
-        end
     end
     
     frame.adminPanel.priceEntry = vgui.Create("DTextEntry", frame)
@@ -258,11 +271,6 @@ function GPS:OpenMenu()
         surface.SetDrawColor( GPS.Config.LineColor )
         self:DrawOutlinedRect()
     end
-    frame.adminPanel.priceEntry.OnGetFocus = function(self)
-        if frame.adminPanel.selected then 
-            self:SetValue( GPS.ClItems[frame.adminPanel.selected].Price )
-        end
-    end
 
     frame.adminPanel.categoryEntry = vgui.Create("DTextEntry", frame)
     frame.adminPanel.categoryEntry:SetPos(leftMar,topMar + (panelTall + spacer)*3)
@@ -275,11 +283,7 @@ function GPS:OpenMenu()
         surface.SetDrawColor( GPS.Config.LineColor )
         self:DrawOutlinedRect()
     end
-    frame.adminPanel.categoryEntry.OnGetFocus = function(self)
-        if frame.adminPanel.selected then 
-            self:SetValue( GPS.ClItems[frame.adminPanel.selected].Category )
-        end
-    end
+
 
     frame.adminPanel.modelEntry = vgui.Create("DTextEntry", frame)
     frame.adminPanel.modelEntry:SetPos(leftMar,topMar + (panelTall + spacer)*4)
@@ -292,30 +296,20 @@ function GPS:OpenMenu()
         surface.SetDrawColor( GPS.Config.LineColor )
         self:DrawOutlinedRect()
     end
-    frame.adminPanel.modelEntry.OnGetFocus = function(self)
-        if frame.adminPanel.selected then 
-            self:SetValue( GPS.ClItems[frame.adminPanel.selected].Model )
-        end
-    end
 
     frame.adminPanel.groupSelect = vgui.Create("DComboBox", frame)
     frame.adminPanel.groupSelect:SetPos(leftMar,topMar + (panelTall + spacer)*5)
-    frame.adminPanel.groupSelect:SetSize( panelWide/2, panelTall)
+    frame.adminPanel.groupSelect:SetSize( frame:GetWide()*.2, panelTall)
     frame.adminPanel.groupSelect:SetSortItems(false)
     frame.adminPanel.groupSelect:SetFont("GPS::MenuFont")
     frame.adminPanel.groupSelect:SetValue( "Pick a group" )
     frame.adminPanel.groupSelect:AddChoice( "Primaries",1 )
     frame.adminPanel.groupSelect:AddChoice( "Secondaries",2 )
     frame.adminPanel.groupSelect:AddChoice( "Misc.",3 )
-    frame.adminPanel.groupSelect.OnMenuOpened = function( self, pnl )
-        if frame.adminPanel.selected then
-            self:ChooseOptionID(GPS.ClItems[frame.adminPanel.selected].Group)
-        end
-    end
 
     frame.adminPanel.teamSelect = vgui.Create("DButton", frame)
     frame.adminPanel.teamSelect:SetPos(leftMar, topMar + (panelTall + spacer)*6)
-    frame.adminPanel.teamSelect:SetSize(frame:GetWide()*.2,frame:GetTall()*.06)
+    frame.adminPanel.teamSelect:SetSize(frame:GetWide()*.2,panelTall)
     frame.adminPanel.teamSelect:SetFont("GPS::MenuFont")
     frame.adminPanel.teamSelect:SetText("Manage Teams")
     frame.adminPanel.teamSelect:SetTextColor( GPS.Config.LabelColor )
@@ -352,7 +346,7 @@ function GPS:OpenMenu()
     end
 
     frame.adminPanel.submitButton = vgui.Create("DButton",frame)
-    frame.adminPanel.submitButton:SetSize(frame:GetWide()*.25, frame:GetTall()*.06)
+    frame.adminPanel.submitButton:SetSize(frame:GetWide()*.25, panelTall)
     frame.adminPanel.submitButton:SetPos(frame:GetWide() - leftMar - frame.adminPanel.submitButton:GetWide(), topMar + (panelTall + spacer)*6)
     frame.adminPanel.submitButton:SetFont("GPS::MenuFont")
     frame.adminPanel.submitButton:SetText("Submit item changes")
@@ -366,6 +360,35 @@ function GPS:OpenMenu()
         frame.adminPanel:SendData()
     end
 
+    frame.adminPanel.editButton = vgui.Create("DButton",frame)
+    frame.adminPanel.editButton:SetSize(frame:GetWide()*.25, panelTall)
+    frame.adminPanel.editButton:SetPos(frame:GetWide() - leftMar - frame.adminPanel.submitButton:GetWide(), topMar + (panelTall + spacer)*5)
+    frame.adminPanel.editButton:SetFont("GPS::MenuFont")
+    frame.adminPanel.editButton:SetText("Edit Existing item")
+    frame.adminPanel.editButton:SetTextColor( GPS.Config.LabelColor )
+    frame.adminPanel.editButton.Paint = function (self,w,h)
+        draw.RoundedBox(0, 0, 0, w, h, GPS.Config.ButtonColor)
+        surface.SetDrawColor( GPS.Config.LineColor )
+        self:DrawOutlinedRect()
+    end
+    frame.adminPanel.editButton.DoClick = function()
+        --print('test',self.editing)
+        if self.editing then
+            frame.adminPanel.wepSelect:Hide()
+            frame.adminPanel.nameEntry:Show()
+            frame.adminPanel.wepSelect:Clear()
+        else
+            frame.adminPanel.nameEntry:Hide()
+            frame.adminPanel.wepSelect:SetValue("Select Item to edit")
+            for id,tbl in pairs(GPS.ClItems) do
+                frame.adminPanel.wepSelect:AddChoice(tbl.ClassName,id)
+            end
+            frame.adminPanel.wepSelect:Show()
+            
+        end
+        self.editing = not self.editing
+    end
+
     function frame.adminPanel:Hide()
         --self.addText:Hide()
         self.nameEntry:Hide()
@@ -376,6 +399,8 @@ function GPS:OpenMenu()
         self.groupSelect:Hide()
         self.teamSelect:Hide()
         self.submitButton:Hide()
+        self.editButton:Hide()
+        self.wepSelect:Hide()
     end
 
     function frame.adminPanel:Show()
@@ -388,6 +413,7 @@ function GPS:OpenMenu()
         self.groupSelect:Show()
         self.teamSelect:Show()
         self.submitButton:Show()
+        self.editButton:Show()
     end
 
     frame.adminPanel:Hide()
