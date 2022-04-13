@@ -657,6 +657,7 @@ function GPS:OpenMenu()
             function catLabel:SelectThis()
                 if frame.catSelect.selected == self then return end
                 frame.catSelect.selected.selected = false
+                frame.catSelect.selected:ToggleColor()
                 frame.catSelect.selected = self
                 self.selected = true
                 frame.itemShop:Update()
