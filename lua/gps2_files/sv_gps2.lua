@@ -140,21 +140,56 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
     if requestType == 0 then 
         -- update wep table
         GPS.SendWepsToClient(ply)
-        print("GPS " .. ply:Nick() .. " requesting wep table refresh")
+        print("GPS : " .. ply:Nick() .. " requesting wep table refresh")
     elseif requestType == 1 then
         -- TODO select an item
         local id = net.ReadUInt(8)
-        print("GPS " .. ply:Nick() .. " selecting wep id : " .. id)
+        print("GPS : " .. ply:Nick() .. " selecting wep id : " .. id)
     elseif requestType == 2 then
         -- TODO buy an item
         local id = net.ReadUInt(8)
-        print("GPS " .. ply:Nick() .. " buying wep id : " .. id)
+        print("GPS : " .. ply:Nick() .. " buying wep id : " .. id)
     elseif requestType == 3 then
         -- TODO sell an item
         local id = net.ReadUInt(8)
-        print("GPS " .. ply:Nick() .. " selling wep id : " .. id)
+        print("GPS : " .. ply:Nick() .. " selling wep id : " .. id)
     elseif requestType == 4 then
-        -- TODO edit/add an item
-    end
+        -- edit/add an item
 
+        if not GPS.Config.CustomAdminCheck(ply) then return end
+
+        local tbl = {}
+        tbl.Teams = {}
+        tbl.ClassName = net.ReadString()
+        tbl.PrintName = net.ReadString()
+        tbl.Price = net.ReadUInt(32) or 0
+        tbl.Category = net.ReadString()
+        tbl.Model = net.ReadString()
+        tbl.Group = net.ReadUInt(2)
+        local teamNum = net.ReadUInt(8) or 0
+        if teamNum > 0 then
+            for i = 1, teamNum do
+                tbl.Teams[net.ReadUInt(8)] = true
+            end
+        end
+
+        print("GPS : " .. ply:Nick() .. " adding new / editing weapon : ")
+        PrintTable(tbl)
+        if not tbl.ClassName then
+            print("GPS : Classname missing, ABORT!")
+            return
+        elseif not tbl.PrintName then 
+            print("GPS : Printname missing, ABORT!")
+            return
+        elseif not tbl.Category then 
+            print("GPS : Category missing, ABORT!")
+            return
+        elseif not tbl.Group then 
+            print("GPS : Group missing, ABORT!")
+            return
+        end
+
+        GPS.AddWeapon(tbl.ClassName, tbl.PrintName,  tbl.Price, tbl.Model, tbl.Category, tbl.Group,  tbl.teams)
+        print("GPS : " .. ply:Nick() .. " added new weapon succesfully!")
+    end
 end)

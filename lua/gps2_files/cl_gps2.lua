@@ -179,16 +179,34 @@ function GPS:OpenMenu()
     frame.adminPanel = {}
 
     function frame.adminPanel:SendData()
-        if not self.nameEntry:GetValue() or string.Trim(self.nameEntry:GetValue()) == '' then return end
+        if not self.nameEntry:GetValue() 
+        or string.Trim(self.nameEntry:GetValue()) == '' 
+        or not self.groupSelect:GetOptionData( self.groupSelect:GetSelectedID() ) 
+        or not self.categoryEntry:GetValue() 
+        then return end
+
+        print("GPS2 : FETCHING NEW WEAPON INFO ...")
         local temptable = {}
         temptable.Class = self.nameEntry:GetValue()
         temptable.Print = self.printEntry:GetValue() or temptable.Class
-        temptable.Price = self.priceEntry:GetValue()
+        temptable.Price = self.priceEntry:GetValue() or 0
         temptable.Category = self.categoryEntry:GetValue()
-        temptable.Model = self.modelEntry:GetValue()
-        temptable.Group = self.groupSelect:GetOptionData()
-        temptable.Teams = self.teamSelect.temptable
+        temptable.Model = self.modelEntry:GetValue() or ''
+        temptable.Group = self.groupSelect:GetOptionData( self.groupSelect:GetSelectedID() )
+        temptable.Teams = self.teamSelect.temptable 
         PrintTable(temptable)
+        print("GPS2 : WEAPON INFO FETCHED")
+
+        self.teamSelect.temptable = {}
+        self.printEntry:Clear()
+        self.priceEntry:Clear()
+        self.categoryEntry:Clear()
+        self.modelEntry:Clear()
+        self.groupSelect:SetValue( "Pick a group" )
+        print("GPS2 : SENDING NEW WEAPON INFO TO SERVER ...")
+
+        GPS.ClientShopReq(GPS.NET_ENUM.ADD , temptable)
+        print("GPS2 : SENT NEW WEAPON INFO TO SERVER")
     end
     local leftMar, spacer, topMar = frame:GetWide()*.02, frame:GetWide()*.014, frame:GetTall()*.22
     local panelWide, panelTall = frame:GetWide() - leftMar*2, frame:GetTall()*.08
@@ -244,6 +262,7 @@ function GPS:OpenMenu()
     frame.adminPanel.wepSelect:SetFont("GPS::MenuFont")
     frame.adminPanel.wepSelect:Hide()
     frame.adminPanel.wepSelect.OnSelect = function(self,ind,val,dat)
+        frame.adminPanel.nameEntry:SetValue(val)
         frame.adminPanel.nameEntry:OnEnter(val)
     end
     
@@ -357,6 +376,7 @@ function GPS:OpenMenu()
         self:DrawOutlinedRect()
     end
     frame.adminPanel.submitButton.DoClick = function()
+        print("test - subdoclick")
         frame.adminPanel:SendData()
     end
 
@@ -726,7 +746,20 @@ function GPS.ClientShopReq(requestType, args)
         -- sell an item
         net.WriteUInt(args[1], 8)
     elseif requestType == 4 then
-        -- TODO edit/add items
+        -- edit/add items
+        net.WriteString(args.Class)
+        net.WriteString(args.Print)
+        net.WriteUInt(args.Price, 32)
+        net.WriteString(args.Category)
+        net.WriteString(args.Model)
+        net.WriteUInt(args.Group, 2)
+        net.WriteUInt(table.Count(args.Teams), 8)
+        if table.Count(args.Teams) > 0 then 
+            for team,_ in pairs(args.Teams) do
+                net.WriteUInt(team, 8)
+            end
+        end
+
     end
     net.SendToServer()
 end
