@@ -574,6 +574,7 @@ function GPS:OpenMenu()
     frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.22)
     frame.itemShop:SetSize(frame:GetWide()*0.62,frame:GetTall()*0.76)
     function frame.itemShop:Update()
+        self:Clear()
         if table.IsEmpty( GPS.ItemsByCateogry ) then return end
         for id,tbl in pairs(GPS.ItemsByCateogry[frame.catSelect.GetSelected():GetText()]) do
             local curItem = self:Add("DPanel")
@@ -697,7 +698,7 @@ function GPS:OpenMenu()
 
     frame.catSelect:Update()
     frame.itemShop:Update()
-    frame:ChangeToTab(2) --todo set back to 0
+    frame:ChangeToTab(0)
     frame.tabSelect:UpdateColors()
     -- always default to shop
 end
