@@ -197,7 +197,7 @@ function GPS:OpenMenu()
         PrintTable(temptable)
         print("GPS2 : WEAPON INFO FETCHED")
 
-        self.teamSelect.temptable = {}
+        if self.teamSelect then self.teamSelect.temptable = {} end
         self.printEntry:Clear()
         self.priceEntry:Clear()
         self.categoryEntry:Clear()
@@ -229,7 +229,7 @@ function GPS:OpenMenu()
         self:DrawOutlinedRect()
     end
     frame.adminPanel.nameEntry.OnEnter = function(self,value)
-        frame.adminPanel.teamSelect.temptable = {}
+        if frame.adminPanel.teamSelect then frame.adminPanel.teamSelect.temptable = {} end
         frame.adminPanel.printEntry:Clear()
         frame.adminPanel.priceEntry:Clear()
         frame.adminPanel.categoryEntry:Clear()
@@ -376,7 +376,6 @@ function GPS:OpenMenu()
         self:DrawOutlinedRect()
     end
     frame.adminPanel.submitButton.DoClick = function()
-        print("test - subdoclick")
         frame.adminPanel:SendData()
     end
 
@@ -392,7 +391,6 @@ function GPS:OpenMenu()
         self:DrawOutlinedRect()
     end
     frame.adminPanel.editButton.DoClick = function()
-        --print('test',self.editing)
         if self.editing then
             frame.adminPanel.wepSelect:Hide()
             frame.adminPanel.nameEntry:Show()
