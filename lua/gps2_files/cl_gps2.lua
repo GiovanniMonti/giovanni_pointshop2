@@ -216,13 +216,7 @@ function GPS:OpenMenu()
     end
     local leftMar, spacer, topMar = frame:GetWide()*.02, frame:GetWide()*.014, frame:GetTall()*.22
     local panelWide, panelTall = frame:GetWide() - leftMar*2, frame:GetTall()*.08
-    --[[
-    frame.adminPanel.addText = vgui.Create("DLabel", frame)
-    frame.adminPanel.addText:SetText("Add New")
-    frame.adminPanel.addText:SetFont("GPS::MenuFont")
-    frame.adminPanel.addText:SizeToContents()
-    frame.adminPanel.addText:SetPos(frame:GetWide()*.08 ,frame:GetTall()*.2)
-    ]]
+    
     frame.adminPanel.nameEntry = vgui.Create("DTextEntry", frame)
     frame.adminPanel.nameEntry:SetPos(leftMar, topMar )
     frame.adminPanel.nameEntry:SetSize( panelWide, panelTall)
@@ -241,28 +235,15 @@ function GPS:OpenMenu()
         frame.adminPanel.categoryEntry:SetText('')
         frame.adminPanel.modelEntry:SetText('')
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
-        --[[
-        if GPS.ItemsByName[value] then
-            for id,tbl in pairs(GPS.ClItems) do
-                if not tbl.ClassName == value then continue end
-                frame.adminPanel.selected = id
-            end
-            frame.adminPanel.groupSelect:ChooseOptionID(GPS.ClItems[frame.adminPanel.selected].Group)
-            frame.adminPanel.priceEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].Price )
-            frame.adminPanel.printEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].PrintName )
-            frame.adminPanel.categoryEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].Category )
-            frame.adminPanel.modelEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].Model )
 
-
-        else --]]
-            for n,tbl in pairs(weapons.GetList()) do
-                if tbl.ClassName == frame.adminPanel.nameEntry:GetValue() then
-                    frame.adminPanel.modelEntry:SetText(tbl.WorldModel or '')
-                    frame.adminPanel.printEntry:SetText(tbl.PrintName or '')
-                    break
-                end
+        for n,tbl in pairs(weapons.GetList()) do
+            if tbl.ClassName == frame.adminPanel.nameEntry:GetValue() then
+                frame.adminPanel.modelEntry:SetText(tbl.WorldModel or '')
+                frame.adminPanel.printEntry:SetText(tbl.PrintName or '')
+                break
             end
-        --end
+        end
+
     end
 
     frame.adminPanel.wepSelect = vgui.Create("DComboBox", frame)
