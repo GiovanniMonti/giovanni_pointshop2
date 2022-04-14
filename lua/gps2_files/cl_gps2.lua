@@ -197,12 +197,12 @@ function GPS:OpenMenu()
         PrintTable(temptable)
         print("GPS2 : WEAPON INFO FETCHED")
 
-        if self.teamSelect then self.teamSelect.temptable = {} end
-        self.printEntry:Clear()
-        self.priceEntry:Clear()
-        self.categoryEntry:Clear()
-        self.modelEntry:Clear()
-        self.groupSelect:SetValue( "Pick a group" )
+        if frame.adminPanel.teamSelect then frame.adminPanel.teamSelect.temptable = {} end
+        frame.adminPanel.printEntry:SetText('')
+        frame.adminPanel.priceEntry:SetText('')
+        frame.adminPanel.categoryEntry:SetText('')
+        frame.adminPanel.modelEntry:SetText('')
+        frame.adminPanel.groupSelect:SetValue( "Pick a group" )
         print("GPS2 : SENDING NEW WEAPON INFO TO SERVER ...")
 
         GPS.ClientShopReq(GPS.NET_ENUM.ADD , temptable)
@@ -230,10 +230,10 @@ function GPS:OpenMenu()
     end
     frame.adminPanel.nameEntry.OnEnter = function(self,value)
         if frame.adminPanel.teamSelect then frame.adminPanel.teamSelect.temptable = {} end
-        frame.adminPanel.printEntry:Clear()
-        frame.adminPanel.priceEntry:Clear()
-        frame.adminPanel.categoryEntry:Clear()
-        frame.adminPanel.modelEntry:Clear()
+        frame.adminPanel.printEntry:SetText('')
+        frame.adminPanel.priceEntry:SetText('')
+        frame.adminPanel.categoryEntry:SetText('')
+        frame.adminPanel.modelEntry:SetText('')
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
 
         if GPS.ItemsByName[value] then
