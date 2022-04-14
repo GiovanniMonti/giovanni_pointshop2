@@ -51,13 +51,13 @@ end
 
 -- function to add weapons to the shop, model should be that of the weapon
 -- returns false if weapon adding fails.
-function GPS.AddWeapon( classname, printname, price, model, category, group, teamsTbl )
+function GPS.AddWeapon( classname, printname, price, model, category, group, teamsTbl,id )
     if not classname or not weapons.GetStored(classname) or not printname or string.Trim(printname) == "" then return false end
 
     price = price or 0
     model = model or ''
     if group < 1 or group > 3 then group = 1 end
-    local id = # GPS.Items + 1
+    local id = id or # GPS.Items + 1
     GPS.Items[id] = {
         ["ClassName"] = classname,
         ["PrintName"] = printname,
@@ -154,7 +154,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " selling wep id : " .. id)
     elseif requestType == 4 then
-        -- edit/add an item
+        -- add an item
 
         if not GPS.Config.CustomAdminCheck(ply) then return end
 
@@ -173,7 +173,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
             end
         end
 
-        print("GPS : " .. ply:Nick() .. " adding new / editing weapon : ")
+        print("GPS : " .. ply:Nick() .. " adding new weapon : ")
         PrintTable(tbl)
         if not tbl.ClassName then
             print("GPS : Classname missing, ABORT!")
@@ -191,5 +191,49 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
 
         GPS.AddWeapon(tbl.ClassName, tbl.PrintName,  tbl.Price, tbl.Model, tbl.Category, tbl.Group,  tbl.teams)
         print("GPS : " .. ply:Nick() .. " added new weapon succesfully!")
+
+    elseif requestType == 5 then
+
+        -- edit an item
+
+        if not GPS.Config.CustomAdminCheck(ply) then return end
+
+        local tbl = {}
+        tbl.Teams = {}
+        tbl.ClassName = net.ReadString()
+        tbl.PrintName = net.ReadString()
+        tbl.Price = net.ReadUInt(32) or 0
+        tbl.Category = net.ReadString()
+        tbl.Model = net.ReadString()
+        tbl.Group = net.ReadUInt(2)
+        local teamNum = net.ReadUInt(8) or 0
+        if teamNum > 0 then
+            for i = 1, teamNum do
+                tbl.Teams[net.ReadUInt(8)] = true
+            end
+        end
+        tbl.id = net.ReadUInt(8)
+        print("GPS : " .. ply:Nick() .. " adding new / editing weapon : ")
+        PrintTable(tbl)
+        if GPS.Items[id] and GPS.Items[id].ClassName == tbl.ClassName then
+            print("GPS : ID and Classname do not match, ABORT!")
+        elseif not tbl.ClassName then
+            print("GPS : Classname missing, ABORT!")
+            return
+        elseif not tbl.PrintName then 
+            print("GPS : Printname missing, ABORT!")
+            return
+        elseif not tbl.Category then 
+            print("GPS : Category missing, ABORT!")
+            return
+        elseif not tbl.Group then 
+            print("GPS : Group missing, ABORT!")
+            return
+        end
+
+        GPS.AddWeapon(tbl.ClassName, tbl.PrintName,  tbl.Price, tbl.Model, tbl.Category, tbl.Group,  tbl.teams, tbl.id)
+        print("GPS : " .. ply:Nick() .. " edited new weapon succesfully!")
+
+
     end
 end)

@@ -194,6 +194,9 @@ function GPS:OpenMenu()
         temptable.Model = self.modelEntry:GetValue() or ''
         temptable.Group = self.groupSelect:GetOptionData( self.groupSelect:GetSelectedID() )
         temptable.Teams = self.teamSelect.temptable 
+        if self.wepSelect:IsVisible() then 
+            temptable.id = self.wepSelect:GetOptionData( self.wepSelect:GetSelectedID() )
+        end
         PrintTable(temptable)
         print("GPS2 : WEAPON INFO FETCHED")
 
@@ -204,8 +207,11 @@ function GPS:OpenMenu()
         frame.adminPanel.modelEntry:SetText('')
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
         print("GPS2 : SENDING NEW WEAPON INFO TO SERVER ...")
-
-        GPS.ClientShopReq(GPS.NET_ENUM.ADD , temptable)
+        if self.wepSelect:IsVisible() then
+            GPS.ClientShopReq(GPS.NET_ENUM.EDIT, temptable)
+        else
+            GPS.ClientShopReq(GPS.NET_ENUM.ADD , temptable)
+        end
         print("GPS2 : SENT NEW WEAPON INFO TO SERVER")
     end
     local leftMar, spacer, topMar = frame:GetWide()*.02, frame:GetWide()*.014, frame:GetTall()*.22
@@ -235,7 +241,7 @@ function GPS:OpenMenu()
         frame.adminPanel.categoryEntry:SetText('')
         frame.adminPanel.modelEntry:SetText('')
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
-
+        --[[
         if GPS.ItemsByName[value] then
             for id,tbl in pairs(GPS.ClItems) do
                 if not tbl.ClassName == value then continue end
@@ -248,7 +254,7 @@ function GPS:OpenMenu()
             frame.adminPanel.modelEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].Model )
 
 
-        else
+        else --]]
             for n,tbl in pairs(weapons.GetList()) do
                 if tbl.ClassName == frame.adminPanel.nameEntry:GetValue() then
                     frame.adminPanel.modelEntry:SetText(tbl.WorldModel or '')
@@ -256,7 +262,7 @@ function GPS:OpenMenu()
                     break
                 end
             end
-        end
+        --end
     end
 
     frame.adminPanel.wepSelect = vgui.Create("DComboBox", frame)
@@ -266,7 +272,18 @@ function GPS:OpenMenu()
     frame.adminPanel.wepSelect:Hide()
     frame.adminPanel.wepSelect.OnSelect = function(self,ind,val,dat)
         frame.adminPanel.nameEntry:SetValue(val)
-        frame.adminPanel.nameEntry:OnEnter(val)
+        if frame.adminPanel.teamSelect then frame.adminPanel.teamSelect.temptable = {} end
+        frame.adminPanel.printEntry:SetText('')
+        frame.adminPanel.priceEntry:SetText('')
+        frame.adminPanel.categoryEntry:SetText('')
+        frame.adminPanel.modelEntry:SetText('')
+        frame.adminPanel.groupSelect:SetValue( "Pick a group" )
+
+        frame.adminPanel.groupSelect:ChooseOptionID(GPS.ClItems[dat].Group)
+        frame.adminPanel.priceEntry:SetValue( GPS.ClItems[dat].Price )
+        frame.adminPanel.printEntry:SetValue( GPS.ClItems[dat].PrintName )
+        frame.adminPanel.categoryEntry:SetValue( GPS.ClItems[dat].Category )
+        frame.adminPanel.modelEntry:SetValue( GPS.ClItems[dat].Model )
     end
     
 
@@ -343,14 +360,9 @@ function GPS:OpenMenu()
     end
     frame.adminPanel.teamSelect.DoClick = function(self) 
         if not frame.adminPanel.nameEntry:GetValue() or frame.adminPanel.nameEntry:GetValue() == '' then return end
-    local allSelected
-        if frame.adminPanel.selected then 
-            self.temptable = GPS.ClItems[frame.adminPanel.selected].Teams
-            if not self.temptable then 
-                allSelected = true
-            end
-        else
-            self.temptable = self.temptable or {}
+        local allSelected = false
+        if not self.temptable then 
+            allSelected = true
         end
 
         local TeamsMenu = DermaMenu()
@@ -711,8 +723,8 @@ GPS.NET_ENUM = {
     ["SELECT"] = 1,
     ["BUY"] = 2,
     ["SELL"] = 3,
-    ["EDIT"] = 4,
     ["ADD"] = 4,
+    ["EDIT"] = 5,
 }
 
 GPS.SEL_NW = {
@@ -733,7 +745,8 @@ function GPS.ClientShopReq(requestType, args)
         1 : select item; {itemID}
         2 : buy item; {itemID}
         3 : sell item; {itemID}
-        4 : add/edit item;
+        4 : add item;
+        5 : edit item;
     --]]
     net.Start("GPS2_ClientShopReq")
     net.WriteUInt(requestType, 4)
@@ -748,7 +761,7 @@ function GPS.ClientShopReq(requestType, args)
     elseif requestType == 3 then
         -- sell an item
         net.WriteUInt(args[1], 8)
-    elseif requestType == 4 then
+    elseif requestType == 4 or requestType == 5 then
         -- edit/add items
         net.WriteString(args.Class)
         net.WriteString(args.Print)
@@ -762,6 +775,7 @@ function GPS.ClientShopReq(requestType, args)
                 net.WriteUInt(team, 8)
             end
         end
+        if requestType == 5 then net.WriteUInt(args.id, 8) end
 
     end
     net.SendToServer()
