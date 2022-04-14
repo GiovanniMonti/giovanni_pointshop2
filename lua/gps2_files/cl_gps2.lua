@@ -237,7 +237,10 @@ function GPS:OpenMenu()
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
 
         if GPS.ItemsByName[value] then
-            frame.adminPanel.selected = GPS.ItemsByName[value]
+            for id,tbl in pairs(GPS.ClItems) do
+                if not tbl.ClassName == value then continue end
+                frame.adminPanel.selected = id
+            end
             frame.adminPanel.groupSelect:ChooseOptionID(GPS.ClItems[frame.adminPanel.selected].Group)
             frame.adminPanel.priceEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].Price )
             frame.adminPanel.printEntry:SetValue( GPS.ClItems[frame.adminPanel.selected].PrintName )
@@ -574,7 +577,7 @@ function GPS:OpenMenu()
     function frame.itemShop:Update()
         self:Clear()
         if table.IsEmpty( GPS.ItemsByCateogry ) then return end
-        for id,tbl in pairs(GPS.ItemsByCateogry[frame.catSelect.GetSelected():GetText()]) do
+        for id,_ in pairs(GPS.ItemsByCateogry[frame.catSelect.GetSelected():GetText()]) do
             local curItem = self:Add("DPanel")
             curItem:Dock( TOP )
             curItem:SetSize(self:GetWide()*0.85, self:GetTall()*0.3)
@@ -589,14 +592,14 @@ function GPS:OpenMenu()
 
             curItem.nameLabel = vgui.Create("DLabel", curItem)
             curItem.nameLabel:SetFont("DermaLarge")
-            curItem.nameLabel:SetText(tbl.PrintName)
+            curItem.nameLabel:SetText(GPS.ClItems[id].PrintName)
             curItem.nameLabel:SizeToContents()
             curItem.nameLabel:Dock(TOP)
             curItem.nameLabel:DockMargin(self:GetWide()*0.22, self:GetTall()*0.065, 0, 0)
 
             curItem.priceLabel = vgui.Create("DLabel", curItem)
             curItem.priceLabel:SetFont("DermaLarge")
-            curItem.priceLabel:SetText( "Price : " .. tostring(tbl.Price) )
+            curItem.priceLabel:SetText( "Price : " .. tostring(GPS.ClItems[id].Price) )
             curItem.priceLabel:SetSize(curItem:GetWide()*0.4,curItem:GetTall()*0.33)
             curItem.priceLabel:SetPos(curItem:GetWide()*0.26 , curItem:GetTall()*0.7 )
 
@@ -606,14 +609,14 @@ function GPS:OpenMenu()
             curItem.transactionButton:SetPos(curItem:GetWide()*0.7 , curItem:GetTall()*0.7 )
             curItem.transactionButton:SetMouseInputEnabled(true)
             function curItem.transactionButton:Update() 
-                if (tbl.Owned) then
+                if (GPS.ClItems[id].Owned) then
                     self:SetText( "Sell" )
                 else
                     self:SetText( "Buy" )
                 end
             end
             function curItem.transactionButton:DoClick()
-                if tbl.Owned then
+                if GPS.ClItems[id].Owned then
                     GPS.ClientShopReq(GPS.NET_ENUM.SELL, {id})
                 else
                     GPS.ClientShopReq(GPS.NET_ENUM.BUY, {id})
@@ -631,7 +634,7 @@ function GPS:OpenMenu()
             curItem.transactionButton:Update()
 
             curItem.modelPanel = vgui.Create("DModelPanel", curItem)
-            curItem.modelPanel:SetModel( tbl.Model)
+            curItem.modelPanel:SetModel( GPS.ClItems[id].Model)
             curItem.modelPanel:SetSize(curItem:GetTall()*0.9,curItem:GetTall()*0.9)
             local min,max = curItem.modelPanel.Entity:GetRenderBounds();
 			curItem.modelPanel:SetCamPos( min:Distance( max ) * Vector( .55, .55, .25 ) )
@@ -799,8 +802,8 @@ net.Receive("GPS2_SendToClient",function()
         end
 
         ::cont::
-        GPS.ItemsByName[GPS.ClItems[id].ClassName] = id
-        GPS.ItemsByCateogry[GPS.ClItems[id].Category][id] = GPS.ClItems[id]
+        GPS.ItemsByName[GPS.ClItems[id].ClassName] = true
+        GPS.ItemsByCateogry[GPS.ClItems[id].Category][id] = true
     end
 end)
 net.Receive("GPS2_OpenMenu", function()
