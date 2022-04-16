@@ -16,9 +16,16 @@ GPS.Config.DonatorRanks = {
 -- Do NOT edit below this line if you don't know what you're doing.
 
 -- decided to add NWStrings at the start so they dont get in the way later, seems better.
+
 util.AddNetworkString("GPS2_OpenMenu")
 util.AddNetworkString("GPS2_SendToClient")
 util.AddNetworkString("GPS2_ClientShopReq")
+
+GPS.SEL_NW = {
+    [1] = "GPS::SPRIM",
+    [2] = "GPS::SSEC",
+    [3] = "GPS::SMISC"
+}
 
 function GPS.Config.CustomAdminCheck(ply)
     if GPS.Config.AdminRanks[ ply:GetUserGroup() ] then 
@@ -141,10 +148,21 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         -- update wep table
         GPS.SendWepsToClient(ply)
         print("GPS : " .. ply:Nick() .. " requesting wep table refresh")
+        return
     elseif requestType == 1 then
-        -- TODO select an item
+        --* select an item
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " selecting wep id : " .. id)
+        -- check if selectable
+        if not GPS.Items[id] then print("GPS : Error selecting item! - doesnt exist") return end
+        if not GPS.HasItem(ply, id) and not GPS.Config.IsDonator(ply) then print("GPS : Error selecting item! - Item not owned!") return end
+        --give to player
+        local curSel = ply:GetNWInt( GPS.SEL_NW[GPS.Items[id].Group] ) 
+        if curSel ~= 0 then ply:StripWeapon(GPS.Items[curSel].ClassName) end
+        if curSel == id then ply:SetNWInt( GPS.SEL_NW[GPS.Items[id].Group], 0 ) return end
+        ply:SetNWInt( GPS.SEL_NW[GPS.Items[id].Group], id )
+        ply:Give(GPS.Items[id].ClassName)
+        return
     elseif requestType == 2 then
         -- TODO buy an item
         local id = net.ReadUInt(8)
@@ -217,16 +235,16 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         PrintTable(tbl)
         if GPS.Items[id] and GPS.Items[id].ClassName == tbl.ClassName then
             print("GPS : ID and Classname do not match, ABORT!")
-        elseif not tbl.ClassName then
+        elseif not tbl.ClassName or string.Trim(tbl.ClassName) == '' then
             print("GPS : Classname missing, ABORT!")
             return
-        elseif not tbl.PrintName then 
+        elseif not tbl.PrintName or string.Trim(tbl.PrintName) == '' then 
             print("GPS : Printname missing, ABORT!")
             return
-        elseif not tbl.Category then 
+        elseif not tbl.Category or string.Trim(tbl.Category) == ''then 
             print("GPS : Category missing, ABORT!")
             return
-        elseif not tbl.Group then 
+        elseif not tbl.Group or not ( tbl.Group == 1 or tbl.Group == 2 or tbl.Group == 3 ) then 
             print("GPS : Group missing, ABORT!")
             return
         end

@@ -519,12 +519,15 @@ function GPS:OpenMenu()
             function curItem.selectBtn:Update()
                 if GPS:IsSelected(id) then
                     self:SetText( "Deselect" )
+                    self:SizeToContents()
                 else
                     self:SetText( "Select" )
+                    self:SizeToContents()
                 end
             end
             function curItem.selectBtn:DoClick()
                 GPS.ClientShopReq(GPS.NET_ENUM.SELECT, {id})
+                timer.Simple(0.5, function() self:Update() end)
             end
 
             function curItem.selectBtn:OnCursorEntered()
@@ -716,8 +719,7 @@ GPS.SEL_NW = {
 
 function GPS:IsSelected(id)
     if not self.ClItems[id] then return end
-    if self.SEL_NW[self.ClItems[id].Group] and LocalPlayer():GetNWInt(self.SEL_NW[self.ClItems[id].Group],-1) == self.ClItems[id] then return true end
-    return false
+    return self.SEL_NW[self.ClItems[id].Group] and LocalPlayer():GetNWInt(self.SEL_NW[self.ClItems[id].Group]) == id
 end
 
 function GPS.ClientShopReq(requestType, args)
