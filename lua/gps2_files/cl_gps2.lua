@@ -6,7 +6,7 @@ local GPSPlyData = {} -- visual checks
 --* LocalPlayer():GetNWInt("GPS2_Points")
 
 GPS.Config = {
-    -- GPS.Config.LineColor
+    -- GPS.Config.SelWepColor
     ["LabelColor"] = Color(255, 255, 255),
     ["LabelColorH"] = Color(61, 123, 224),
     ["LabelColorS"] = Color(39, 94, 184),
@@ -14,6 +14,8 @@ GPS.Config = {
     ["BackgroundColor"] = Color(45, 45, 45, 240),
     ["LineColor"] = Color(105, 105, 105),
     ["ButtonColor"] = Color(25, 93, 130),
+    ["SelWepColor"] = Color(227, 34, 34),
+    ["SelWepColorH"] = Color(235, 66, 66),
 }
 
 function GPS:OpenMenu()
@@ -524,6 +526,7 @@ function GPS:OpenMenu()
                     self:SetText( "Select" )
                     self:SizeToContents()
                 end
+                self:ToggleColor()
             end
             function curItem.selectBtn:DoClick()
                 GPS.ClientShopReq(GPS.NET_ENUM.SELECT, {id})
@@ -531,11 +534,19 @@ function GPS:OpenMenu()
             end
 
             function curItem.selectBtn:OnCursorEntered()
-                self:SetTextColor(GPS.Config.LabelColorH)
+                if self:GetText() == 'Select' then self:SetTextColor(GPS.Config.LabelColorH) end
             end
             function curItem.selectBtn:OnCursorExited()
-                self:Update() -- update after a click, should resolve visual bugs.
-                self:SetTextColor(GPS.Config.LabelColor)
+                self:Update() -- update after a click, should resolve visual bugs. GPS.Config.SelWepColor
+                if self:GetText() == 'Select' then self:SetTextColor(GPS.Config.LabelColor) end
+            end
+
+            function curItem.selectBtn:ToggleColor()
+                if self.GetText() == 'Deselect' then
+                    self:SetTextColor(GPS.Config.SelWepColor)
+                else
+                    self:SetTextColor(GPS.Config.LabelColorS)
+                end
             end
 
             curItem.modelPanel = vgui.Create("DModelPanel", curItem)
