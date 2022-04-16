@@ -542,7 +542,7 @@ function GPS:OpenMenu()
             end
 
             function curItem.selectBtn:ToggleColor()
-                if self.GetText() == 'Deselect' then
+                if self:GetText() == 'Deselect' then
                     self:SetTextColor(GPS.Config.SelWepColor)
                 else
                     self:SetTextColor(GPS.Config.LabelColorS)
