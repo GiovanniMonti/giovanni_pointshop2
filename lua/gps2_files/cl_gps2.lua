@@ -6,7 +6,7 @@ local GPSPlyData = {} -- visual checks
 --* LocalPlayer():GetNWInt("GPS2_Points")
 
 GPS.Config = {
-    -- GPS.Config.SelWepColor
+    -- GPS.Config.SelWepColorH
     ["LabelColor"] = Color(255, 255, 255),
     ["LabelColorH"] = Color(61, 123, 224),
     ["LabelColorS"] = Color(39, 94, 184),
@@ -15,7 +15,7 @@ GPS.Config = {
     ["LineColor"] = Color(105, 105, 105),
     ["ButtonColor"] = Color(25, 93, 130),
     ["SelWepColor"] = Color(227, 34, 34),
-    ["SelWepColorH"] = Color(235, 66, 66),
+    ["SelWepColoH"] = Color(212, 59, 59),
 }
 
 function GPS:OpenMenu()
@@ -518,37 +518,43 @@ function GPS:OpenMenu()
             curItem.selectBtn:SetText("Sample")
             curItem.selectBtn:SizeToContents()
             curItem.selectBtn:SetPos(curItem:GetWide()*0.5 , curItem:GetTall()*.99 - curItem.selectBtn:GetTall() )
+            function curItem:SelectThis()
+                local par = self:GetParent()
+                if par.selected == self then return end
+                if par.selected then
+                    par.selected.selected = false
+                    par.selected.selectBtn:Update()
+                end
+                par.selected = self
+                self.selected = true
+                self.selectBtn:Update()
+            end
             function curItem.selectBtn:Update()
                 if GPS:IsSelected(id) then
                     self:SetText( "Deselect" )
                     self:SizeToContents()
+                    self:SetTextColor(GPS.Config.SelWepColor)
+                    --curItem.selected = true
                 else
                     self:SetText( "Select" )
                     self:SizeToContents()
+                    self:SetTextColor(GPS.Config.LabelColor)
+                    --curItem.selected = false
                 end
-                self:ToggleColor()
             end
             function curItem.selectBtn:DoClick()
                 GPS.ClientShopReq(GPS.NET_ENUM.SELECT, {id})
-                timer.Simple(0.5, function() self:Update() end)
+                timer.Simple(0.15, function() curItem:SelectThis() end)
             end
-
             function curItem.selectBtn:OnCursorEntered()
-                if self:GetText() == 'Select' then self:SetTextColor(GPS.Config.LabelColorH) end
+                if self:GetText() == 'Select' then self:SetTextColor(GPS.Config.LabelColorH)
+                else self:SetTextColor(GPS.Config.SelWepColorH) end
             end
             function curItem.selectBtn:OnCursorExited()
-                self:Update() -- update after a click, should resolve visual bugs. GPS.Config.SelWepColor
-                if self:GetText() == 'Select' then self:SetTextColor(GPS.Config.LabelColor) end
+                --self:Update() -- update after a click, should resolve visual bugs. GPS.Config.SelWepColor
+                if self:GetText() == 'Select' then self:SetTextColor(GPS.Config.LabelColor)
+                else self:SetTextColor(GPS.Config.SelWepColor) end
             end
-
-            function curItem.selectBtn:ToggleColor()
-                if self:GetText() == 'Deselect' then
-                    self:SetTextColor(GPS.Config.SelWepColor)
-                else
-                    self:SetTextColor(GPS.Config.LabelColorS)
-                end
-            end
-
             curItem.modelPanel = vgui.Create("DModelPanel", curItem)
             curItem.modelPanel:SetModel( tbl.Model)
             curItem.modelPanel:SetSize(curItem:GetTall()*0.9,curItem:GetTall()*0.9)
@@ -556,9 +562,7 @@ function GPS:OpenMenu()
 			curItem.modelPanel:SetCamPos( min:Distance( max ) * Vector( .55, .55, .25 ) )
 			curItem.modelPanel:SetLookAt( ( min + max ) / 2 )
 			curItem.modelPanel.LayoutEntity = function() end
-
             curItem.selectBtn:Update()
-
         end
     end
 
