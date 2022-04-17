@@ -43,7 +43,7 @@ function GPS:OpenMenu()
         end
     end
     function frame:Paint(w,h)
-        draw.RoundedBox(2, 0, 0, w, h, GPS.Config.BackgroundColor)
+        draw.RoundedBox(20, 0, 0, w, h, GPS.Config.BackgroundColor)
         surface.SetDrawColor( GPS.Config.LineColor )
         surface.DrawLine(self:GetWide() * 0.02 , self:GetTall() * 0.18, self:GetWide() * 0.98 , self:GetTall() * 0.18)
         self:AdditionalPaint(w,h)
@@ -83,7 +83,7 @@ function GPS:OpenMenu()
     frame.closeBtn:SetImage("cross_icon.png")
     frame.closeBtn:SizeToContents()
     frame.closeBtn:SetSize( frame.closeBtn:GetWide()*0.4, frame.closeBtn:GetTall()*0.4 )
-    frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.1, frame:GetTall()*0.01 )
+    frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.4, frame:GetTall()*0.02 )
     
     frame.tabSelect = {}
 
@@ -406,7 +406,6 @@ function GPS:OpenMenu()
     end
 
     function frame.adminPanel:Hide()
-        --self.addText:Hide()
         self.nameEntry:Hide()
         self.printEntry:Hide()
         self.priceEntry:Hide()
@@ -420,7 +419,6 @@ function GPS:OpenMenu()
     end
 
     function frame.adminPanel:Show()
-        --self.addText:Show()
         self.nameEntry:Show()
         self.printEntry:Show()
         self.priceEntry:Show()
@@ -437,7 +435,6 @@ function GPS:OpenMenu()
     --* LOADOUT CODE STARTS
 
     frame.groupLabels = {}
-    --ugly AF but it works
     frame.groupLabels[1] = vgui.Create("DLabel", frame)
     frame.groupLabels[2] = vgui.Create("DLabel", frame)
     frame.groupLabels[3] = vgui.Create("DLabel", frame)
@@ -470,36 +467,26 @@ function GPS:OpenMenu()
     frame.loadoutSelect[1]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
     frame.loadoutSelect[1]:SetPos(frame:GetWide()*0.04,frame:GetTall()*0.3)
     frame.loadoutSelect[1]:Hide()
-    --[[
-    frame.loadoutSelect[1].Paint = function(self)
-        self:DrawOutlinedRect()
-    end --]]
+
     frame.loadoutSelect[2] = vgui.Create("DScrollPanel", frame)
     frame.loadoutSelect[2]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
     frame.loadoutSelect[2]:SetPos(frame:GetWide()*0.5 - frame.loadoutSelect[2]:GetWide()/2 ,frame:GetTall()*0.3)
     frame.loadoutSelect[2]:Hide()
-    --[[
-    frame.loadoutSelect[2].Paint = function(self)
-        self:DrawOutlinedRect()
-    end --]]
+
     frame.loadoutSelect[3] = vgui.Create("DScrollPanel", frame)
     frame.loadoutSelect[3]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
     frame.loadoutSelect[3]:SetPos(frame:GetWide()*0.67,frame:GetTall()*0.3)
     frame.loadoutSelect[3]:Hide()
-    --[[
-    frame.loadoutSelect[3].Paint = function(self)
-        self:DrawOutlinedRect()
-    end --]]
 
     function frame.loadoutSelect:Update()
-        -- TODO complete this
         frame.loadoutSelect[1]:Clear()
         frame.loadoutSelect[2]:Clear()
         frame.loadoutSelect[3]:Clear()
         for id,tbl in pairs(GPS.ClItems) do
             local curItem = self[tbl.Group]:Add("DPanel")
+            curItem:SetSize( self[tbl.Group]:GetWide()*0.95, self[tbl.Group]:GetTall()*0.2)
             curItem:Dock( TOP )
-            curItem:SetSize( self[tbl.Group]:GetWide()*0.95,  self[tbl.Group]:GetTall()*0.2)
+            curItem:DockMargin(0,curItem:GetTall()*.1,0,0)
 
             function curItem:Paint()
                 surface.SetDrawColor( GPS.Config.LineColor )
@@ -534,12 +521,10 @@ function GPS:OpenMenu()
                     self:SetText( "Deselect" )
                     self:SizeToContents()
                     self:SetTextColor(GPS.Config.SelWepColor)
-                    --curItem.selected = true
                 else
                     self:SetText( "Select" )
                     self:SizeToContents()
                     self:SetTextColor(GPS.Config.LabelColor)
-                    --curItem.selected = false
                 end
             end
             function curItem.selectBtn:DoClick()
@@ -592,6 +577,8 @@ function GPS:OpenMenu()
             local curItem = self:Add("DPanel")
             curItem:Dock( TOP )
             curItem:SetSize(self:GetWide()*0.85, self:GetTall()*0.3)
+            curItem:DockMargin(0,curItem:GetTall()*.1,0,0)
+
 
             function curItem:Paint()
                 surface.SetDrawColor(92, 92, 92, 255 )
@@ -664,7 +651,7 @@ function GPS:OpenMenu()
             catLabel:Dock( TOP )
             catLabel:SetFont("DermaLarge")
             catLabel:SizeToContents()
-            catLabel:DockMargin(ScrW()*0.02, 0, 0, ScrH()/216)
+            catLabel:DockMargin(ScrW()*0.02, catLabel:GetTall()*.2, 0, ScrH()/216)
             catLabel:SetMouseInputEnabled( true )
             catLabel.selected = false
             function catLabel:SelectThis()
