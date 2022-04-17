@@ -22,6 +22,7 @@ function GPS.GetPoints(ply)
 end
 
 function GPS.SetPoints(ply, points)
+    if not ply or not isnumber(points) then return end
     local str = "UPDATE GPS2_Money SET Money = " .. SQLStr( points ) .. " WHERE SID64 = " .. SQLStr( ply:SteamID64() ) .." ;"
     str = sql.Query(str)
     ply:SetNWInt("GPS2_Points", GPS.GetPoints(ply) )
@@ -83,17 +84,26 @@ function GPS.HasItem(ply, item)
     -- normally query result is a string.
 end
 
+function GPS.CanUnlock(ply, item)
+    if not ply or not item or not GPS.Items[item] then return false end
+    if GPS.GetPoints(ply) < GPS.Items[item].Price then return false end
+    if GPS.Items[item].Teams and not GPS.Items[item].Teams[ply:Team()] then return false end
+    if GPS.HasItem(ply,item) then return false end
+
+    return true
+end
+
 function GPS.Unlock(ply, item)
-    if not GPS.Items[item] or not GPS.CanUnlock() then return false end
+    if not ply or not item or not GPS.Items[item] or not GPS.CanUnlock(ply, item) then return false end
     local str = "UPDATE GPS2 SET w" .. SQLStr(item, true) .. " = 1 WHERE SID64 = '" .. ply:SteamID64() .. "' ;" 
     print('GPS2 Serverlog : ' .. ply:Name() .. " unlocked " .. GPS.Items[item].ClassName .. " id : w" .. tostring(item) )
     return sql.Query(str)
     -- return false if there is an error or you dont have permissions to unlock
-    -- GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[item].Price ) can be used after calling this function
+    -- DOES NOT REMOVE COST!!!
 end
 
 function GPS.Lock(ply, item)
-    if not GPS.Items[item] or not GPS.HasItem(ply, item) then return false end
+    if not ply or not item or not GPS.Items[item] or not GPS.HasItem(ply, item) then return false end
     local str = "UPDATE GPS2 SET w" .. SQLStr(item, true) .. " = 0 WHERE SID64 = '" .. ply:SteamID64() .. "' ;" 
     print('GPS2 Serverlog : ' .. ply:Name() .. " locked " .. GPS.Items[item].ClassName .. " id : w" .. tostring(item) )
     return sql.Query(str)

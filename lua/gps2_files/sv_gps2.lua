@@ -1,6 +1,7 @@
 GPS.Items = GPS.Items or {}
 GPS.ItemIDs = GPS.ItemsIDs or {}
 GPS.Config = GPS.Config or {}
+
 GPS.Config.AdminRanks = {
     ["superadmin"] = true,
     --["admin"] = true,
@@ -13,19 +14,9 @@ GPS.Config.DonatorRanks = {
     ["Donator"] = true,
 }
 
+GPS.Config.RefundMultiplier = .75
+
 -- Do NOT edit below this line if you don't know what you're doing.
-
--- decided to add NWStrings at the start so they dont get in the way later, seems better.
-
-util.AddNetworkString("GPS2_OpenMenu")
-util.AddNetworkString("GPS2_SendToClient")
-util.AddNetworkString("GPS2_ClientShopReq")
-
-GPS.SEL_NW = {
-    [1] = "GPS::SPRIM",
-    [2] = "GPS::SSEC",
-    [3] = "GPS::SMISC"
-}
 
 function GPS.Config.CustomAdminCheck(ply)
     if GPS.Config.AdminRanks[ ply:GetUserGroup() ] then 
@@ -40,7 +31,17 @@ function GPS.Config.IsDonator(ply)
     end
     return false
 end
+-- no more config below here, stop touching even if yo know what you're doing.
 
+util.AddNetworkString("GPS2_OpenMenu")
+util.AddNetworkString("GPS2_SendToClient")
+util.AddNetworkString("GPS2_ClientShopReq")
+
+GPS.SEL_NW = {
+    [1] = "GPS::SPRIM",
+    [2] = "GPS::SSEC",
+    [3] = "GPS::SMISC"
+}
 
 function GPS.SaveItemList()
     if #GPS.Items > 0 then
@@ -164,13 +165,16 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         ply:Give(GPS.Items[id].ClassName)
         return
     elseif requestType == 2 then
-        -- TODO buy an item
+        --buy an item
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " buying wep id : " .. id)
+        if GPS.Unlock(ply,item) then GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[item].Price ) end
+
     elseif requestType == 3 then
-        -- TODO sell an item
+        -- sell an item
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " selling wep id : " .. id)
+        if GPS.Lock(ply,item) then GPS.SetPoints(ply, GPS.GetPoints(ply) + (GPS.Items[item].Price * GPS.Config.RefundMultiplier) ) end
     elseif requestType == 4 then
         -- add an item
 
