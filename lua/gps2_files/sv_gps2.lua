@@ -19,6 +19,7 @@ GPS.Config.RefundMultiplier = .75
 -- Do NOT edit below this line if you don't know what you're doing.
 
 function GPS.Config.CustomAdminCheck(ply)
+    if not ply then return end
     if GPS.Config.AdminRanks[ ply:GetUserGroup() ] then 
         return true
     end
@@ -26,7 +27,9 @@ function GPS.Config.CustomAdminCheck(ply)
 end
 
 function GPS.Config.IsDonator(ply)
-    if GPS.Config.AdminRanks[ ply:GetUserGroup() ] then 
+    print("test dono")
+    if not ply then return end
+    if GPS.Config.DonatorRanks[ ply:GetUserGroup() ] then 
         return true
     end
     return false
@@ -87,13 +90,6 @@ function GPS.RemoveWeapon(item)
     table.remove(GPS.Items,item)
 end
 
-function GPS.CanUnlock(ply, item)
-    if not item or not player or not GPS.Items[item] then return false end
-    if GPS.HasItem(ply, item) then return false end
-    if GPS.Items[item].Teams and not GPS.Items[item].Teams[ply:Team()] then return false end
-    if GPS.Items[item].Price > ply:GetPoints(ply) then return false end
-    return true
-end
 -- send only what you need
 function GPS.VisibleItems(ply)
     if not ply then return false end
@@ -166,15 +162,16 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         return
     elseif requestType == 2 then
         --buy an item
+        print("test 1")
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " buying wep id : " .. id)
-        if GPS.Unlock(ply,item) then GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[item].Price ) end
+        if GPS.Unlock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[id].Price ) end
 
     elseif requestType == 3 then
         -- sell an item
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " selling wep id : " .. id)
-        if GPS.Lock(ply,item) then GPS.SetPoints(ply, GPS.GetPoints(ply) + (GPS.Items[item].Price * GPS.Config.RefundMultiplier) ) end
+        if GPS.Lock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) + (GPS.Items[id].Price * GPS.Config.RefundMultiplier) ) end
     elseif requestType == 4 then
         -- add an item
 

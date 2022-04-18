@@ -17,8 +17,10 @@ function GPS.SQLInit()
 end
 
 function GPS.GetPoints(ply)
+    if not ply or not ply:IsPlayer() then return false end
     local str = "SELECT Money FROM GPS2_Money WHERE SID4 = " .. SQLStr( ply:SteamID64() ) .. " ;"
-    return sql.QueryValue(str)
+    str = sql.QueryValue(str)
+    return (not (str == 'NULL') or str)
 end
 
 function GPS.SetPoints(ply, points)
@@ -73,11 +75,11 @@ function GPS.HasItem(ply, item)
     if not GPS.Items[item] then return false end
     local str = "SELECT " .. "w" .. SQLStr(item, true) .. " FROM GPS2 WHERE SID64 = '" .. ply:SteamID64() .. "' ;"
     local queryResult = sql.QueryValue(str)
-    if queryResult == '0' then
+    if queryResult == '0' or queryResult == 'NULL' then
         return false
     elseif queryResult == '1' then
         return true
-    else 
+    else
         return queryResult
     end
     -- false is returned if there is an error, nil if the query returned no data
@@ -85,16 +87,22 @@ function GPS.HasItem(ply, item)
 end
 
 function GPS.CanUnlock(ply, item)
+    print("test 4")
     if not ply or not item or not GPS.Items[item] then return false end
-    if GPS.GetPoints(ply) < GPS.Items[item].Price then return false end
-    if GPS.Items[item].Teams and not GPS.Items[item].Teams[ply:Team()] then return false end
+    print("test 5")
     if GPS.HasItem(ply,item) then return false end
-
+    print("test 6")
+    if GPS.GetPoints(ply) < GPS.Items[item].Price then return false end
+    print("test 7")
+    if GPS.Items[item].Teams and not GPS.Items[item].Teams[ply:Team()] then return false end
+    print("test 8")
     return true
 end
 
 function GPS.Unlock(ply, item)
-    if not ply or not item or not GPS.Items[item] or not GPS.CanUnlock(ply, item) then return false end
+    print("test 2 \n item : " , item, "\n items isreal : ", not not GPS.Items[item] )
+    if not ply or GPS.Config.IsDonator(ply) or not item or not GPS.Items[item] or not GPS.CanUnlock(ply, item) then return false end
+    print("test 3")
     local str = "UPDATE GPS2 SET w" .. SQLStr(item, true) .. " = 1 WHERE SID64 = '" .. ply:SteamID64() .. "' ;" 
     print('GPS2 Serverlog : ' .. ply:Name() .. " unlocked " .. GPS.Items[item].ClassName .. " id : w" .. tostring(item) )
     return sql.Query(str)
@@ -103,7 +111,7 @@ function GPS.Unlock(ply, item)
 end
 
 function GPS.Lock(ply, item)
-    if not ply or not item or not GPS.Items[item] or not GPS.HasItem(ply, item) then return false end
+    if not ply or GPS.Config.IsDonator(ply) or not item or not GPS.Items[item] or not GPS.HasItem(ply, item) then return false end
     local str = "UPDATE GPS2 SET w" .. SQLStr(item, true) .. " = 0 WHERE SID64 = '" .. ply:SteamID64() .. "' ;" 
     print('GPS2 Serverlog : ' .. ply:Name() .. " locked " .. GPS.Items[item].ClassName .. " id : w" .. tostring(item) )
     return sql.Query(str)

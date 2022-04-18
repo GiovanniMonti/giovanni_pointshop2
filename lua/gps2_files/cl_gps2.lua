@@ -613,7 +613,7 @@ function GPS:OpenMenu()
                     self:SetText( "Buy" )
                 end
             end
-            function curItem.transactionButton:DoClick()
+            function curItem.transactionButton:DoDoubleClick()
                 if GPS.ClItems[id].Owned then
                     GPS.ClientShopReq(GPS.NET_ENUM.SELL, {id})
                 else

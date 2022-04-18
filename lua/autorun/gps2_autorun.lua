@@ -6,6 +6,7 @@ if SERVER then
     AddCSLuaFile("gps2_files/cl_gps2.lua")
     GPS.LoadItemList()
     GPS.SQLInit()
+    print( sql.LastError() )
 end
 
 if CLIENT then
