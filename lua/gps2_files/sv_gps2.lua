@@ -27,7 +27,6 @@ function GPS.Config.CustomAdminCheck(ply)
 end
 
 function GPS.Config.IsDonator(ply)
-    print("test dono")
     if not ply then return end
     if GPS.Config.DonatorRanks[ ply:GetUserGroup() ] then 
         return true
@@ -142,7 +141,7 @@ end)
 net.Receive("GPS2_ClientShopReq", function(len,ply)
     local requestType = net.ReadUInt(4)
     if requestType == 0 then 
-        -- update wep table
+        --* update wep table
         GPS.SendWepsToClient(ply)
         print("GPS : " .. ply:Nick() .. " requesting wep table refresh")
         return
@@ -161,18 +160,18 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         ply:Give(GPS.Items[id].ClassName)
         return
     elseif requestType == 2 then
-        --buy an item
+        --*buy an item
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " buying wep id : " .. id)
         if GPS.Unlock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[id].Price ) end
 
     elseif requestType == 3 then
-        -- sell an item
+        --* sell an item
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " selling wep id : " .. id)
         if GPS.Lock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) + (GPS.Items[id].Price * GPS.Config.RefundMultiplier) ) end
     elseif requestType == 4 then
-        -- add an item
+        --* add an item
 
         if not GPS.Config.CustomAdminCheck(ply) then return end
 
@@ -212,7 +211,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
 
     elseif requestType == 5 then
 
-        -- edit an item
+        --* edit an item
 
         if not GPS.Config.CustomAdminCheck(ply) then return end
 

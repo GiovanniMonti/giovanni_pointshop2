@@ -613,13 +613,23 @@ function GPS:OpenMenu()
                     self:SetText( "Buy" )
                 end
             end
-            function curItem.transactionButton:DoDoubleClick()
-                if GPS.ClItems[id].Owned then
-                    GPS.ClientShopReq(GPS.NET_ENUM.SELL, {id})
+            function curItem.transactionButton:DoClick()
+                if self.clicked then
+                    if GPS.ClItems[id].Owned then
+                        GPS.ClientShopReq(GPS.NET_ENUM.SELL, {id})
+                    else
+                        GPS.ClientShopReq(GPS.NET_ENUM.BUY, {id})
+                    end
+                    GPS.ClientShopReq( GPS.NET_ENUM.WEPTBL )
+                    timer.Simple(0.15, function() frame.itemShop:Update() end)
+                    self.clicked = false
+
                 else
-                    GPS.ClientShopReq(GPS.NET_ENUM.BUY, {id})
+                    self:SetText("Confirm?")
+                    self.clicked = true
                 end
             end
+            
 
             function curItem.transactionButton:OnCursorEntered()
                 self:SetTextColor(GPS.Config.LabelColorH)
@@ -627,6 +637,7 @@ function GPS:OpenMenu()
             function curItem.transactionButton:OnCursorExited()
                 self:Update() -- update after a click, should resolve visual bugs.
                 self:SetTextColor(GPS.Config.LabelColor)
+                self.clicked = false
             end
 
             curItem.transactionButton:Update()
