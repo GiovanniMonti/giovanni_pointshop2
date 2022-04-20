@@ -18,14 +18,15 @@ end
 
 function GPS.GetPoints(ply)
     if not ply or not ply:IsPlayer() then return false end
-    local str = "SELECT Money FROM GPS2_Money WHERE SID4 = " .. SQLStr( ply:SteamID64() ) .. " ;"
+    local str = "SELECT Points FROM GPS2_Money WHERE SID64 = " .. SQLStr( ply:SteamID64() ) .. " ;"
     str = sql.QueryValue(str)
-    return (not (str == 'NULL') or str)
+    if str == 'NULL' then print("GPS2 : Error in fetching player points from DB!") return false end
+    return tonumber(str)
 end
 
 function GPS.SetPoints(ply, points)
     if not ply or not isnumber(points) then return end
-    local str = "UPDATE GPS2_Money SET Money = " .. SQLStr( points ) .. " WHERE SID64 = " .. SQLStr( ply:SteamID64() ) .." ;"
+    local str = "UPDATE GPS2_Money SET Points = " .. SQLStr( points ) .. " WHERE SID64 = " .. SQLStr( ply:SteamID64() ) .." ;"
     str = sql.Query(str)
     ply:SetNWInt("GPS2_Points", GPS.GetPoints(ply) )
     return str
@@ -91,8 +92,8 @@ function GPS.CanUnlock(ply, item)
     if not ply or not item or not GPS.Items[item] then return false end
     print("test 5")
     if GPS.HasItem(ply,item) then return false end
-    print("test 6")
-    if GPS.GetPoints(ply) < GPS.Items[item].Price then return false end
+    print("test 6",GPS.GetPoints(ply))
+    if not GPS.GetPoints(ply) or GPS.GetPoints(ply) < GPS.Items[item].Price then return false end
     print("test 7")
     if GPS.Items[item].Teams and not GPS.Items[item].Teams[ply:Team()] then return false end
     print("test 8")
