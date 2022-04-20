@@ -162,7 +162,6 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         return
     elseif requestType == 2 then
         --buy an item
-        print("test 1")
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " buying wep id : " .. id)
         if GPS.Unlock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[id].Price ) end
