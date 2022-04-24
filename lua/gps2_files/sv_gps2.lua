@@ -38,12 +38,38 @@ end
 util.AddNetworkString("GPS2_OpenMenu")
 util.AddNetworkString("GPS2_SendToClient")
 util.AddNetworkString("GPS2_ClientShopReq")
+util.AddNetworkString( "GPS2_LegacyNotifySv" )
 
 GPS.SEL_NW = {
     [1] = "GPS::SPRIM",
     [2] = "GPS::SSEC",
     [3] = "GPS::SMISC"
 }
+
+
+GPS.NOTIFY = {
+    ['GENERIC'] = 0,
+    ['ERROR'] = 1,
+    ['UNDO'] = 2,
+    ['HINT'] = 3,
+    ['CLEANUP'] = 4,
+}
+-- same as the client-only vanilla gmod ones.
+
+function GPS.LegacyNotifyPlayer(ply, text, gtype, length)
+    length = length or 2
+    gtype = gtype or 0
+    if !ply or !text then return end
+    net.Start("GPS2_LegacyNotifySv")
+        net.WriteString(text)
+        net.WriteInt(gtype, 4)
+        net.WriteInt(length,8) 
+    if ply == "BROADCAST" then     
+        net.Broadcast()
+    else   
+        net.Send(ply)
+    end
+end
 
 function GPS.SaveItemList()
     if #GPS.Items > 0 then
@@ -163,6 +189,9 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         --*buy an item
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " buying wep id : " .. id)
+        if not GPS.GetPoints(ply) or GPS.GetPoints(ply) < GPS.Items[id].Price then 
+            GPS.LegacyNotifyPlayer(ply, "You do not have the funds to buy this item!",  GPS.NOTIFY.ERROR)
+        end
         if GPS.Unlock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[id].Price ) end
 
     elseif requestType == 3 then

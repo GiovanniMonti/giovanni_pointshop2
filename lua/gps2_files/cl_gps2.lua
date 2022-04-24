@@ -483,6 +483,7 @@ function GPS:OpenMenu()
         frame.loadoutSelect[2]:Clear()
         frame.loadoutSelect[3]:Clear()
         for id,tbl in pairs(GPS.ClItems) do
+            if not (GPSPlyData.isadmin or GPSPlyData.isdonator) and not tbl.Owned then continue end 
             local curItem = self[tbl.Group]:Add("DPanel")
             curItem:SetSize( self[tbl.Group]:GetWide()*0.95, self[tbl.Group]:GetTall()*0.2)
             curItem:Dock( TOP )
@@ -628,6 +629,17 @@ function GPS:OpenMenu()
                     self:SetText("Confirm?")
                     self.clicked = true
                 end
+            end
+
+            function curItem.transactionButton:DoDoubleClick()
+                self.clicked = false
+                if GPS.ClItems[id].Owned then
+                    GPS.ClientShopReq(GPS.NET_ENUM.SELL, {id})
+                else
+                    GPS.ClientShopReq(GPS.NET_ENUM.BUY, {id})
+                end
+                GPS.ClientShopReq( GPS.NET_ENUM.WEPTBL )
+                timer.Simple(0.15, function() frame.itemShop:Update() end)
             end
             
 
@@ -820,4 +832,14 @@ net.Receive("GPS2_OpenMenu", function()
     GPSPlyData.isadmin = net.ReadBool()
     GPSPlyData.isdonator = net.ReadBool()
     GPS:OpenMenu()
+end)
+
+net.Receive("GPS2_LegacyNotifySv", function()
+    local text = net.ReadString()
+    local gtype = net.ReadInt(4)
+    local lentime = net.ReadInt(8)
+    print(text)
+    notification.AddLegacy( text, gtype, lentime )
+    surface.PlaySound( "buttons/button15.wav" )
+
 end)
