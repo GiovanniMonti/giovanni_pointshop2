@@ -2,11 +2,9 @@ GPS.ClItems = {}
 GPS.WepCategories = {}
 GPS.ItemsByCateogry = {}
 GPS.ItemsByName = {}
-local GPSPlyData = {} -- visual checks
---* LocalPlayer():GetNWInt("GPS2_Points")
+local GPSPlyData = {}
 
 GPS.Config = {
-    -- GPS.Config.SelWepColorH
     ["LabelColor"] = Color(255, 255, 255),
     ["LabelColorH"] = Color(61, 123, 224),
     ["LabelColorS"] = Color(39, 94, 184),
@@ -722,7 +720,6 @@ function GPS:OpenMenu()
     frame.itemShop:Update()
     frame:ChangeToTab(0)
     frame.tabSelect:UpdateColors()
-    -- always default to shop
 end
 
 -------------------* net code below
@@ -789,7 +786,6 @@ function GPS.ClientShopReq(requestType, args)
     net.SendToServer()
 end
 
-
 net.Receive("GPS2_SendToClient",function()
     table.Empty( GPS.WepCategories )
     table.Empty( GPS.ClItems )
@@ -822,7 +818,6 @@ net.Receive("GPS2_SendToClient",function()
         for j = 1, nTeams do
             GPS.ClItems[id].Teams[net.ReadUInt(8)] = true
         end
-
         ::cont::
         GPS.ItemsByName[GPS.ClItems[id].ClassName] = true
         GPS.ItemsByCateogry[GPS.ClItems[id].Category][id] = true
@@ -841,5 +836,4 @@ net.Receive("GPS2_LegacyNotifySv", function()
     print(text)
     notification.AddLegacy( text, gtype, lentime )
     surface.PlaySound( "buttons/button15.wav" )
-
 end)
