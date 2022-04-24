@@ -19,8 +19,6 @@ GPS.Config = {
 }
 
 function GPS:OpenMenu()
-    -- todo add points counter text
-    -- todo make admin menu
     local frame = vgui.Create("DFrame")
     frame:SetSize(ScrW()/2,ScrH()/2)
     frame:Center()
@@ -45,7 +43,9 @@ function GPS:OpenMenu()
     function frame:Paint(w,h)
         draw.RoundedBox(20, 0, 0, w, h, GPS.Config.BackgroundColor)
         surface.SetDrawColor( GPS.Config.LineColor )
-        surface.DrawLine(self:GetWide() * 0.02 , self:GetTall() * 0.18, self:GetWide() * 0.98 , self:GetTall() * 0.18)
+        surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .18, self:GetWide() * .98 , self:GetTall() * .18)
+        surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .12, self:GetWide()*.2 , self:GetTall() * .18)
+        draw.SimpleText("Points : " .. LocalPlayer():GetNWInt("GPS2_Points"), "GPS::MenuFont", self:GetWide()*.02 , self:GetTall()*.12, GPS.Config.LabelColor)
         self:AdditionalPaint(w,h)
     end
 
