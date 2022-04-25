@@ -28,7 +28,7 @@ function GPS:OpenMenu()
 
     function frame:AdditionalPaint(w,h)
         if self.CurTab == 0 then 
-            surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.9)
+            surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.98)
             return 
         end
         if self.CurTab == 1 then
@@ -465,23 +465,38 @@ function GPS:OpenMenu()
     frame.loadoutSelect[1]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
     frame.loadoutSelect[1]:SetPos(frame:GetWide()*0.04,frame:GetTall()*0.3)
     frame.loadoutSelect[1]:Hide()
+    frame.loadoutSelect[1].VBar.Paint = function(self,w,h) end
+    frame.loadoutSelect[1].VBar:SetHideButtons( true )
+    frame.loadoutSelect[1].VBar.btnGrip.Paint = function(self,w,h)
+        draw.RoundedBox( 4, 0, 0, w, h, GPS.Config.LineColor )
+    end
 
     frame.loadoutSelect[2] = vgui.Create("DScrollPanel", frame)
     frame.loadoutSelect[2]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
     frame.loadoutSelect[2]:SetPos(frame:GetWide()*0.5 - frame.loadoutSelect[2]:GetWide()/2 ,frame:GetTall()*0.3)
     frame.loadoutSelect[2]:Hide()
+    frame.loadoutSelect[2].VBar.Paint = function(self,w,h) end
+    frame.loadoutSelect[2].VBar:SetHideButtons( true )
+    frame.loadoutSelect[2].VBar.btnGrip.Paint = function(self,w,h)
+        draw.RoundedBox( 4, 0, 0, w, h, GPS.Config.LineColor )
+    end
 
     frame.loadoutSelect[3] = vgui.Create("DScrollPanel", frame)
     frame.loadoutSelect[3]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
     frame.loadoutSelect[3]:SetPos(frame:GetWide()*0.67,frame:GetTall()*0.3)
     frame.loadoutSelect[3]:Hide()
+    frame.loadoutSelect[3].VBar.Paint = function(self,w,h) end
+    frame.loadoutSelect[3].VBar:SetHideButtons( true )
+    frame.loadoutSelect[3].VBar.btnGrip.Paint = function(self,w,h)
+        draw.RoundedBox( 4, 0, 0, w, h, GPS.Config.LineColor )
+    end
 
     function frame.loadoutSelect:Update()
         frame.loadoutSelect[1]:Clear()
         frame.loadoutSelect[2]:Clear()
         frame.loadoutSelect[3]:Clear()
         for id,tbl in pairs(GPS.ClItems) do
-            if not (GPSPlyData.isadmin or GPSPlyData.isdonator) and not tbl.Owned then continue end 
+            if not GPSPlyData.isdonator and not tbl.Owned then continue end 
             local curItem = self[tbl.Group]:Add("DPanel")
             curItem:SetSize( self[tbl.Group]:GetWide()*0.95, self[tbl.Group]:GetTall()*0.2)
             curItem:Dock( TOP )
@@ -496,14 +511,14 @@ function GPS:OpenMenu()
             curItem.nameLabel:SetFont("DermaLarge")
             curItem.nameLabel:SetText(tbl.PrintName)
             curItem.nameLabel:SizeToContents()
-            curItem.nameLabel:SetPos(curItem:GetWide()*0.5,curItem:GetTall()*0.1)
+            curItem.nameLabel:SetPos(curItem:GetTall(),curItem:GetTall()*0.1)
 
             curItem.selectBtn = vgui.Create("DLabel", curItem)
             curItem.selectBtn:SetFont("DermaLarge")
             curItem.selectBtn:SetMouseInputEnabled(true)
             curItem.selectBtn:SetText("Sample")
             curItem.selectBtn:SizeToContents()
-            curItem.selectBtn:SetPos(curItem:GetWide()*0.5 , curItem:GetTall()*.99 - curItem.selectBtn:GetTall() )
+            curItem.selectBtn:SetPos(curItem:GetTall() , curItem:GetTall()*.99 - curItem.selectBtn:GetTall() )
             function curItem:SelectThis()
                 local par = self:GetParent()
                 if par.selected == self then return end
@@ -568,7 +583,13 @@ function GPS:OpenMenu()
 
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
     frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.22)
-    frame.itemShop:SetSize(frame:GetWide()*0.62,frame:GetTall()*0.76)
+    frame.itemShop:SetSize(frame:GetWide()*0.72,frame:GetTall()*0.76)
+    frame.itemShop.VBar.Paint = function(self,w,h) end
+    frame.itemShop.VBar:SetHideButtons( true )
+    frame.itemShop.VBar.btnGrip.Paint = function(self,w,h)
+        draw.RoundedBox( 4, 0, 0, w, h, GPS.Config.LineColor )
+    end
+
     function frame.itemShop:Update()
         self:Clear()
         if table.IsEmpty( GPS.ItemsByCateogry ) then return end
