@@ -523,17 +523,12 @@ function GPS:OpenMenu()
                 local par = self:GetParent()
                 local oldItem = par.selected
                 if par.selected == self then par.selected = nil; self.selectBtn:Update() return end
-                if oldItem then
-                    print(oldItem.selected)
-                    oldItem.selected = false
-                    oldItem.selectBtn:Update()
-                end
+                if oldItem then oldItem.selected = false; oldItem.selectBtn:Update() end
                 self.selected = true
                 par.selected = self
                 self.selectBtn:Update()
             end
             function curItem.selectBtn:Update()
-                print("update",GPS:IsSelected(id),id)
                 if GPS:IsSelected(id) then
                     self:SetText( "Deselect" )
                     self:SizeToContents()
