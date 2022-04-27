@@ -521,16 +521,19 @@ function GPS:OpenMenu()
             curItem.selectBtn:SetPos(curItem:GetTall() , curItem:GetTall()*.99 - curItem.selectBtn:GetTall() )
             function curItem:SelectThis()
                 local par = self:GetParent()
-                if par.selected == self then return end
-                if par.selected then
-                    par.selected.selected = false
-                    par.selected.selectBtn:Update()
+                local oldItem = par.selected
+                if par.selected == self then par.selected = nil; self.selectBtn:Update() return end
+                if oldItem then
+                    print(oldItem.selected)
+                    oldItem.selected = false
+                    oldItem.selectBtn:Update()
                 end
-                par.selected = self
                 self.selected = true
+                par.selected = self
                 self.selectBtn:Update()
             end
             function curItem.selectBtn:Update()
+                print("update",GPS:IsSelected(id),id)
                 if GPS:IsSelected(id) then
                     self:SetText( "Deselect" )
                     self:SizeToContents()
@@ -543,7 +546,7 @@ function GPS:OpenMenu()
             end
             function curItem.selectBtn:DoClick()
                 GPS.ClientShopReq(GPS.NET_ENUM.SELECT, {id})
-                timer.Simple(0.15, function() curItem:SelectThis() end)
+                timer.Simple(0.3, function() curItem:SelectThis() end)
             end
             function curItem.selectBtn:OnCursorEntered()
                 if self:GetText() == 'Select' then self:SetTextColor(GPS.Config.LabelColorH)
@@ -561,6 +564,8 @@ function GPS:OpenMenu()
 			curItem.modelPanel:SetCamPos( min:Distance( max ) * Vector( .55, .55, .25 ) )
 			curItem.modelPanel:SetLookAt( ( min + max ) / 2 )
 			curItem.modelPanel.LayoutEntity = function() end
+
+            if GPS:IsSelected(id) and not curItem:GetParent().selected then curItem.selected = true; curItem:GetParent().selected = curItem end
             curItem.selectBtn:Update()
         end
     end
