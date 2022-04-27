@@ -42,7 +42,7 @@ function GPS:OpenMenu()
         draw.RoundedBox(20, 0, 0, w, h, GPS.Config.BackgroundColor)
         surface.SetDrawColor( GPS.Config.LineColor )
         surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .18, self:GetWide() * .98 , self:GetTall() * .18)
-        surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .12, self:GetWide()*.2 , self:GetTall() * .18)
+        surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .12, self:GetWide()*.2 , self:GetTall() * .2)
         draw.SimpleText("Points : " .. LocalPlayer():GetNWInt("GPS2_Points"), "GPS::MenuFont", self:GetWide()*.02 , self:GetTall()*.12, GPS.Config.LabelColor)
         self:AdditionalPaint(w,h)
     end
