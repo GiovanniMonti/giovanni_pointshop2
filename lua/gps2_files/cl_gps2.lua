@@ -28,7 +28,7 @@ function GPS:OpenMenu()
 
     function frame:AdditionalPaint(w,h)
         if self.CurTab == 0 then 
-            surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.2, self:GetWide() * 0.2 , self:GetTall() * 0.98)
+            surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.18, self:GetWide() * 0.2 , self:GetTall() * 0.98)
             return 
         end
         if self.CurTab == 1 then
@@ -42,7 +42,7 @@ function GPS:OpenMenu()
         draw.RoundedBox(20, 0, 0, w, h, GPS.Config.BackgroundColor)
         surface.SetDrawColor( GPS.Config.LineColor )
         surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .18, self:GetWide() * .98 , self:GetTall() * .18)
-        surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .12, self:GetWide()*.2 , self:GetTall() * .2)
+        surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .12, self:GetWide()*.2 , self:GetTall() * .18)
         draw.SimpleText("Points : " .. LocalPlayer():GetNWInt("GPS2_Points"), "GPS::MenuFont", self:GetWide()*.02 , self:GetTall()*.12, GPS.Config.LabelColor)
         self:AdditionalPaint(w,h)
     end
