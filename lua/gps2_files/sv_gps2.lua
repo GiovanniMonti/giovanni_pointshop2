@@ -118,7 +118,7 @@ end
 -- send only what you need
 function GPS.VisibleItems(ply)
     if not ply then return false end
-    if GPS.Config.CustomAdminCheck(ply) then return GPS.Items end
+    --if GPS.Config.CustomAdminCheck(ply) then return GPS.Items end for debugging
     local visibleItems = {}
     for id, tbl in pairs(GPS.Items) do
         if ( not tbl.Teams ) or tbl.Teams[ply:Team()] then
