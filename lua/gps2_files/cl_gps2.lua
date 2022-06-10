@@ -815,6 +815,7 @@ net.Receive("GPS2_SendToClient",function()
     table.Empty( GPS.ClItems )
     table.Empty( GPS.ItemsByCateogry )
     table.Empty( GPS.ItemsByName )
+    
     local nItems = net.ReadUInt(8)
     for i = 1, nItems do
         local id = net.ReadUInt(8)
@@ -847,6 +848,7 @@ net.Receive("GPS2_SendToClient",function()
         GPS.ItemsByCateogry[GPS.ClItems[id].Category][id] = true
     end
 end)
+
 net.Receive("GPS2_OpenMenu", function()
     GPSPlyData.isadmin = net.ReadBool()
     GPSPlyData.isdonator = net.ReadBool()

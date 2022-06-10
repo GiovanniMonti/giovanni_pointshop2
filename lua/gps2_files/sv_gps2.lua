@@ -87,7 +87,7 @@ end
 
 -- function to add weapons to the shop, model should be that of the weapon
 -- returns false if weapon adding fails.
-function GPS.AddWeapon( classname, printname, price, model, category, group, teamsTbl,id )
+function GPS.AddWeapon( classname, printname, price, model, category, group, teamsTbl, id )
     if not classname or not weapons.GetStored(classname) or not printname or string.Trim(printname) == "" then return false end
 
     price = price or 0
@@ -121,7 +121,7 @@ function GPS.VisibleItems(ply)
     if GPS.Config.CustomAdminCheck(ply) then return GPS.Items end
     local visibleItems = {}
     for id, tbl in pairs(GPS.Items) do
-        if not tbl.Teams or tbl.Teams[ply:Team()] then
+        if ( not tbl.Teams ) or tbl.Teams[ply:Team()] then
             visibleItems[id] = tbl
         end
     end
@@ -158,7 +158,7 @@ end
 
 hook.Add("ShowSpare1", "GPS2_OpenMenuCommand", function(ply)
     GPS.SendWepsToClient(ply)
-    net.Start("GPS2_OpenMenu", true)
+    net.Start("GPS2_OpenMenu")
     net.WriteBool(GPS.Config.CustomAdminCheck(ply))
     net.WriteBool(GPS.Config.IsDonator(ply))
     net.Send(ply)
@@ -202,7 +202,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         print("GPS : " .. ply:Nick() .. " selling wep id : " .. id)
         if GPS.Lock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) + (GPS.Items[id].Price * GPS.Config.RefundMultiplier) ) end
 
-        if ply:GetNWInt( GPS.SEL_NW[ GPS:Items[id].Group ], 0 ) == id then
+        if ply:GetNWInt( GPS.SEL_NW[ GPS.Items[id].Group ], 0 ) == id then
             ply:StripWeapon( GPS.Items[id].ClassName )
         end
 
@@ -284,7 +284,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
             return
         end
 
-        GPS.AddWeapon(tbl.ClassName, tbl.PrintName,  tbl.Price, tbl.Model, tbl.Category, tbl.Group,  tbl.teams, tbl.id)
+        GPS.AddWeapon(tbl.ClassName, tbl.PrintName,  tbl.Price, tbl.Model, tbl.Category, tbl.Group,  tbl.Teams, tbl.id)
         print("GPS : " .. ply:Nick() .. " edited new weapon succesfully!")
 
     end
