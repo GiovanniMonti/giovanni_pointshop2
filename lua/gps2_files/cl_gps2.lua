@@ -193,7 +193,7 @@ function GPS:OpenMenu()
         temptable.Category = self.categoryEntry:GetValue()
         temptable.Model = self.modelEntry:GetValue() or ''
         temptable.Group = self.groupSelect:GetOptionData( self.groupSelect:GetSelectedID() )
-        temptable.Teams = self.teamSelect.temptable 
+        temptable.Teams = self.teamSelect.temptable or {}
         if self.wepSelect:IsVisible() then 
             temptable.id = self.wepSelect:GetOptionData( self.wepSelect:GetSelectedID() )
         end
@@ -214,6 +214,8 @@ function GPS:OpenMenu()
         end
         print("GPS2 : SENT NEW WEAPON INFO TO SERVER")
     end
+
+
     local leftMar, spacer, topMar = frame:GetWide()*.02, frame:GetWide()*.014, frame:GetTall()*.22
     local panelWide, panelTall = frame:GetWide() - leftMar*2, frame:GetTall()*.08
     
@@ -334,6 +336,7 @@ function GPS:OpenMenu()
     frame.adminPanel.teamSelect:SetText("Manage Teams")
     frame.adminPanel.teamSelect:SetTextColor( GPS.Config.LabelColor )
     frame.adminPanel.teamSelect:SetPaintBackground(false)
+    frame.adminPanel.teamSelect.temptable = {}
     frame.adminPanel.teamSelect.Paint = function (self,w,h)
         draw.RoundedBox(0, 0, 0, w, h, GPS.Config.ButtonColor)
         surface.SetDrawColor( GPS.Config.LineColor )
@@ -342,7 +345,7 @@ function GPS:OpenMenu()
     frame.adminPanel.teamSelect.DoClick = function(self) 
         if not frame.adminPanel.nameEntry:GetValue() or frame.adminPanel.nameEntry:GetValue() == '' then return end
         local allSelected = false
-        if not self.temptable then 
+        if not self.temptable then
             allSelected = true
         end
 
@@ -372,7 +375,7 @@ function GPS:OpenMenu()
         self:DrawOutlinedRect()
     end
     frame.adminPanel.submitButton.DoClick = function()
-        frame.adminPanel:SendData() --! this doesnt exist!!!
+        frame.adminPanel:SendData()
     end
 
     frame.adminPanel.editButton = vgui.Create("DButton",frame)
