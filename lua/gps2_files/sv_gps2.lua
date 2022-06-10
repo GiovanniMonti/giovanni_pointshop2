@@ -171,6 +171,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         GPS.SendWepsToClient(ply)
         print("GPS : " .. ply:Nick() .. " requesting wep table refresh")
         return
+
     elseif requestType == 1 then
         --* select an item
         local id = net.ReadUInt(8)
@@ -185,6 +186,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         ply:SetNWInt( GPS.SEL_NW[GPS.Items[id].Group], id )
         ply:Give(GPS.Items[id].ClassName)
         return
+
     elseif requestType == 2 then
         --*buy an item
         local id = net.ReadUInt(8)
@@ -199,6 +201,11 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " selling wep id : " .. id)
         if GPS.Lock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) + (GPS.Items[id].Price * GPS.Config.RefundMultiplier) ) end
+
+        if ply:GetNWInt( GPS.SEL_NW[ GPS:Items[id].Group ], 0 ) == id then
+            ply:StripWeapon( GPS.Items[id].ClassName )
+        end
+
     elseif requestType == 4 then
         --* add an item
 
@@ -279,7 +286,6 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
 
         GPS.AddWeapon(tbl.ClassName, tbl.PrintName,  tbl.Price, tbl.Model, tbl.Category, tbl.Group,  tbl.teams, tbl.id)
         print("GPS : " .. ply:Nick() .. " edited new weapon succesfully!")
-
 
     end
 end)

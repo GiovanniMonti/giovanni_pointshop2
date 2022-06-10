@@ -9,8 +9,8 @@ GPS.Config = {
     ["LabelColorH"] = Color(61, 123, 224),
     ["LabelColorS"] = Color(39, 94, 184),
     ["LabelColorSH"] = Color(108, 130, 166),
-    ["BackgroundColor"] = Color(5,53,28),
-    ["LineColor"] = Color(105, 105, 105),
+    ["BackgroundColor"] = Color(58,58,58,230),
+    ["LineColor"] = Color(122, 121, 121),
     ["ButtonColor"] = Color(25, 93, 130),
     ["SelWepColor"] = Color(227, 34, 34),
     ["SelWepColoH"] = Color(212, 59, 59),
@@ -39,7 +39,7 @@ function GPS:OpenMenu()
         end
     end
     function frame:Paint(w,h)
-        draw.RoundedBox(20, 0, 0, w, h, GPS.Config.BackgroundColor)
+        draw.RoundedBox(4, 0, 0, w, h, GPS.Config.BackgroundColor)
         surface.SetDrawColor( GPS.Config.LineColor )
         surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .18, self:GetWide() * .98 , self:GetTall() * .18)
         surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .12, self:GetWide()*.2 , self:GetTall() * .18)
@@ -86,7 +86,7 @@ function GPS:OpenMenu()
     frame.tabSelect = {}
 
     frame.tabSelect[1] = vgui.Create("DLabel", frame)
-    frame.tabSelect[1]:SetFont("DermaLarge")
+    frame.tabSelect[1]:SetFont("GPS::DermaLarge")
     frame.tabSelect[1]:SetText("Shop")
     frame.tabSelect[1]:SizeToContents()
     frame.tabSelect[1]:SetPos(frame:GetWide()*0.25 - frame.tabSelect[1]:GetWide()/2 ,frame:GetTall()*0.12)
@@ -110,7 +110,7 @@ function GPS:OpenMenu()
         end
     end
     frame.tabSelect[2] = vgui.Create("DLabel", frame)
-    frame.tabSelect[2]:SetFont("DermaLarge")
+    frame.tabSelect[2]:SetFont("GPS::DermaLarge")
     frame.tabSelect[2]:SetText("Loadout")
     frame.tabSelect[2]:SizeToContents()
     frame.tabSelect[2]:SetPos(frame:GetWide()*0.40 - frame.tabSelect[2]:GetWide()/2,frame:GetTall()*0.12)
@@ -135,7 +135,7 @@ function GPS:OpenMenu()
     end
     if GPSPlyData.isadmin then
         frame.tabSelect[3] = vgui.Create("DLabel", frame)
-        frame.tabSelect[3]:SetFont("DermaLarge")
+        frame.tabSelect[3]:SetFont("GPS::DermaLarge")
         frame.tabSelect[3]:SetText("Admin")
         frame.tabSelect[3]:SizeToContents()
         frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.12)
@@ -372,7 +372,7 @@ function GPS:OpenMenu()
         self:DrawOutlinedRect()
     end
     frame.adminPanel.submitButton.DoClick = function()
-        frame.adminPanel:SendData()
+        frame.adminPanel:SendData() --! this doesnt exist!!!
     end
 
     frame.adminPanel.editButton = vgui.Create("DButton",frame)
@@ -436,9 +436,9 @@ function GPS:OpenMenu()
     frame.groupLabels[1] = vgui.Create("DLabel", frame)
     frame.groupLabels[2] = vgui.Create("DLabel", frame)
     frame.groupLabels[3] = vgui.Create("DLabel", frame)
-    frame.groupLabels[1]:SetFont("DermaLarge")
-    frame.groupLabels[2]:SetFont("DermaLarge")
-    frame.groupLabels[3]:SetFont("DermaLarge")
+    frame.groupLabels[1]:SetFont("GPS::DermaLarge")
+    frame.groupLabels[2]:SetFont("GPS::DermaLarge")
+    frame.groupLabels[3]:SetFont("GPS::DermaLarge")
     frame.groupLabels[1]:SetText("Primaries")
     frame.groupLabels[2]:SetText("Secondaries")
     frame.groupLabels[3]:SetText("Misc.")
@@ -508,13 +508,13 @@ function GPS:OpenMenu()
             end
 
             curItem.nameLabel = vgui.Create("DLabel", curItem)
-            curItem.nameLabel:SetFont("DermaLarge")
+            curItem.nameLabel:SetFont("GPS::DermaLarge")
             curItem.nameLabel:SetText(tbl.PrintName)
             curItem.nameLabel:SizeToContents()
             curItem.nameLabel:SetPos(curItem:GetTall(),curItem:GetTall()*0.1)
 
             curItem.selectBtn = vgui.Create("DLabel", curItem)
-            curItem.selectBtn:SetFont("DermaLarge")
+            curItem.selectBtn:SetFont("GPS::DermaLarge")
             curItem.selectBtn:SetMouseInputEnabled(true)
             curItem.selectBtn:SetText("Sample")
             curItem.selectBtn:SizeToContents()
@@ -523,7 +523,7 @@ function GPS:OpenMenu()
                 local par = self:GetParent()
                 local oldItem = par.selected
                 if par.selected == self then par.selected = nil; self.selectBtn:Update() return end
-                if oldItem then oldItem.selected = false; oldItem.selectBtn:Update() end
+                if oldItem and oldItem:IsValid() then oldItem.selected = false; oldItem.selectBtn:Update() end
                 self.selected = true
                 par.selected = self
                 self.selectBtn:Update()
@@ -609,20 +609,20 @@ function GPS:OpenMenu()
             end
 
             curItem.nameLabel = vgui.Create("DLabel", curItem)
-            curItem.nameLabel:SetFont("DermaLarge")
+            curItem.nameLabel:SetFont("GPS::DermaLarge")
             curItem.nameLabel:SetText(GPS.ClItems[id].PrintName)
             curItem.nameLabel:SizeToContents()
             curItem.nameLabel:Dock(TOP)
             curItem.nameLabel:DockMargin(self:GetWide()*0.22, self:GetTall()*0.065, 0, 0)
 
             curItem.priceLabel = vgui.Create("DLabel", curItem)
-            curItem.priceLabel:SetFont("DermaLarge")
+            curItem.priceLabel:SetFont("GPS::DermaLarge")
             curItem.priceLabel:SetText( "Price : " .. tostring(GPS.ClItems[id].Price) )
             curItem.priceLabel:SetSize(curItem:GetWide()*0.4,curItem:GetTall()*0.33)
             curItem.priceLabel:SetPos(curItem:GetWide()*0.26 , curItem:GetTall()*0.7 )
 
             curItem.transactionButton = vgui.Create("DLabel", curItem)
-            curItem.transactionButton:SetFont("DermaLarge")
+            curItem.transactionButton:SetFont("GPS::DermaLarge")
             curItem.transactionButton:SetSize(curItem:GetWide()*0.4, curItem:GetTall()*0.33)
             curItem.transactionButton:SetPos(curItem:GetWide()*0.7 , curItem:GetTall()*0.7 )
             curItem.transactionButton:SetMouseInputEnabled(true)
@@ -691,7 +691,7 @@ function GPS:OpenMenu()
             local catLabel = self:Add("DLabel")
             catLabel:SetText( tostring(category) )
             catLabel:Dock( TOP )
-            catLabel:SetFont("DermaLarge")
+            catLabel:SetFont("GPS::DermaLarge")
             catLabel:SizeToContents()
             catLabel:DockMargin(ScrW()*0.02, catLabel:GetTall()*.2, 0, ScrH()/216)
             catLabel:SetMouseInputEnabled( true )
