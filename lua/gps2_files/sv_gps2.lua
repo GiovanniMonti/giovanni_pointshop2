@@ -301,26 +301,25 @@ hook.Add( "PlayerSpawn", "GPS2_SpawnHook", function( ply, transition )
 
 end )
 
-hook.Add( "PlayerChangedTeam","GPS2_TeamChangeHook", function(ply, oteam, nteam)
+hook.Add( "PlayerChangedTeam", "GPS2_TeamChangeHook", function(ply, oteam, nteam)
 
-    for _, v in ipairs(GPS.SEL_NW) do
+    for _, v in ipairs( GPS.SEL_NW ) do
         local cursel = ply:GetNWInt( v, false ) 
         if not cursel or cursel == 0 then continue end
 
-        cursel = GPS.Items[cursel]
-        PrintTable(cursel)
+        cursel = GPS.Items[ cursel ]
 
         if cursel.Teams then
             if cursel.Teams[ply:Team()] then
-                if not ply:HasWeapon() then
+                if not ply:HasWeapon( cursel.ClassName ) then
                     ply:Give( cursel.ClassName )
                 end
             else
-                if ply:HasWeapon() then
+                if ply:HasWeapon( cursel.ClassName ) then
                     ply:StripWeapon( cursel.ClassName )
                 end
             end
-        elseif not ply:HasWeapon() then
+        elseif not ply:HasWeapon( cursel.ClassName ) then
             ply:Give( cursel.ClassName )
         end
     end
