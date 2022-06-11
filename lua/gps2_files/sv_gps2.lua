@@ -289,3 +289,40 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
 
     end
 end)
+
+hook.Add( "PlayerSpawn", "GPS2_SpawnHook", function( ply, transition )
+    if transition then return end
+
+    for _, v in ipairs(GPS.SEL_NW) do
+        local cursel = ply:GetNWInt( v, false ) 
+        if not cursel or cursel == 0 then continue end
+        ply:Give( GPS.Items[cursel].ClassName )
+    end
+
+end )
+
+hook.Add( "PlayerChangedTeam","GPS2_TeamChangeHook", function(ply, oteam, nteam)
+
+    for _, v in ipairs(GPS.SEL_NW) do
+        local cursel = ply:GetNWInt( v, false ) 
+        if not cursel or cursel == 0 then continue end
+
+        cursel = GPS.Items[cursel]
+        PrintTable(cursel)
+
+        if cursel.Teams then
+            if cursel.Teams[ply:Team()] then
+                if not ply:HasWeapon() then
+                    ply:Give( cursel.ClassName )
+                end
+            else
+                if ply:HasWeapon() then
+                    ply:StripWeapon( cursel.ClassName )
+                end
+            end
+        elseif not ply:HasWeapon() then
+            ply:Give( cursel.ClassName )
+        end
+    end
+    
+end )
