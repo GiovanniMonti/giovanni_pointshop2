@@ -201,6 +201,7 @@ function GPS:OpenMenu()
         print("GPS2 : WEAPON INFO FETCHED")
 
         if frame.adminPanel.teamSelect then frame.adminPanel.teamSelect.temptable = {} end
+        frame.adminPanel.nameEntry:SetText('')
         frame.adminPanel.printEntry:SetText('')
         frame.adminPanel.priceEntry:SetText('')
         frame.adminPanel.categoryEntry:SetText('')
