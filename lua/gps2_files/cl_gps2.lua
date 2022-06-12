@@ -765,7 +765,7 @@ GPS.SEL_NW = {
 
 function GPS:IsSelected(id)
     if not self.ClItems[id] then return end
-    return self.SEL_NW[self.ClItems[id].Group] and LocalPlayer():GetNWInt(self.SEL_NW[self.ClItems[id].Group]) == id
+    return self.SEL_NW[self.ClItems[id].Group] and LocalPlayer():GetNWInt(self.SEL_NW[self.ClItems[id].Group],false) == id
 end
 
 function GPS.ClientShopReq(requestType, args)

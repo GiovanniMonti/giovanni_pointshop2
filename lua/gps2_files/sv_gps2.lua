@@ -204,6 +204,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
 
         if ply:GetNWInt( GPS.SEL_NW[ GPS.Items[id].Group ], 0 ) == id then
             ply:StripWeapon( GPS.Items[id].ClassName )
+            ply:SetNWInt( GPS.SEL_NW[GPS.Items[id].Group], 0 )
         end
 
     elseif requestType == 4 then
@@ -296,13 +297,13 @@ hook.Add( "PlayerSpawn", "GPS2_SpawnHook", function( ply, transition )
     for _, v in ipairs(GPS.SEL_NW) do
         local cursel = ply:GetNWInt( v, false ) 
         if not cursel or cursel == 0 then continue end
-        ply:Give( GPS.Items[cursel].ClassName )
+        ply:Give( GPS.Items[cursel].ClassName)
     end
 
 end )
 
-hook.Add( "PlayerChangedTeam", "GPS2_TeamChangeHook", function(ply, oteam, nteam)
-
+hook.Add( "PlayerChangedTeam ", "GPS2_TeamChangeHook", function(ply,oteam,nteam)
+    
     for _, v in ipairs( GPS.SEL_NW ) do
         local cursel = ply:GetNWInt( v, false ) 
         if not cursel or cursel == 0 then continue end
@@ -310,17 +311,20 @@ hook.Add( "PlayerChangedTeam", "GPS2_TeamChangeHook", function(ply, oteam, nteam
         cursel = GPS.Items[ cursel ]
 
         if cursel.Teams then
-            if cursel.Teams[ply:Team()] then
+
+            if cursel.Teams[nteam] then
                 if not ply:HasWeapon( cursel.ClassName ) then
-                    ply:Give( cursel.ClassName )
+                    timer.Simple(0.6,function() ply:Give( cursel.ClassName ) end)
                 end
             else
                 if ply:HasWeapon( cursel.ClassName ) then
                     ply:StripWeapon( cursel.ClassName )
+                    ply:SetNWInt( GPS.SEL_NW[GPS.Items[id].Group], 0 )
                 end
             end
-        elseif not ply:HasWeapon( cursel.ClassName ) then
-            ply:Give( cursel.ClassName )
+            
+        else
+            timer.Simple(0.6,function() ply:Give( cursel.ClassName ) end)
         end
     end
     
