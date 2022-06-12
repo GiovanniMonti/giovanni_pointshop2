@@ -1,2 +1,2 @@
 # giovanni_pointshop2
-An improved remake of my origina; pointshop, much better backend code and a much easier GUI!
+An improved remake of my original pointshop, much better server code and a much easier & prettier GUI!
