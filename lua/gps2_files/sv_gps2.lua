@@ -15,6 +15,8 @@ GPS.Config.DonatorRanks = {
 }
 
 GPS.Config.RefundMultiplier = .75
+GPS.Config.tokenTimeDelay = 300 --seconds (5min)
+GPS.Config.tokenGiveAmount = 300
 
 -- Do NOT edit below this line if you don't know what you're doing.
 
@@ -329,3 +331,15 @@ hook.Add( "PlayerChangedTeam ", "GPS2_TeamChangeHook", function(ply,oteam,nteam)
     end
     
 end )
+
+hook.Add("PlayerInitialSpawn","GPS_SetTokenTimer",function(pl)
+
+    timer.Create("timer"..pl:SteamID(),GPS.Config.tokenTimeDelay,0,function()
+        local ply = pl
+        if not ply:IsValid() then timer.Remove("timer"..pl:SteamID()) return end
+
+        GPS.SetPoints(ply, GPS.GetPoints(ply) + GPS.Config.tokenGiveAmount )
+
+    end)
+
+end)
