@@ -196,13 +196,15 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         if not GPS.GetPoints(ply) or GPS.GetPoints(ply) < GPS.Items[id].Price then 
             GPS.LegacyNotifyPlayer(ply, "You do not have the funds to buy this item!",  GPS.NOTIFY.ERROR)
         end
-        if GPS.Unlock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[id].Price ) end
+        GPS.Unlock(ply,id)
+        GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[id].Price )
 
     elseif requestType == 3 then
         --* sell an item
         local id = net.ReadUInt(8)
         print("GPS : " .. ply:Nick() .. " selling wep id : " .. id)
-        if GPS.Lock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) + (GPS.Items[id].Price * GPS.Config.RefundMultiplier) ) end
+        GPS.Lock(ply,id)
+        GPS.SetPoints(ply, math.Round(GPS.GetPoints(ply) + (GPS.Items[id].Price * GPS.Config.RefundMultiplier)) )
 
         if ply:GetNWInt( GPS.SEL_NW[ GPS.Items[id].Group ], 0 ) == id then
             ply:StripWeapon( GPS.Items[id].ClassName )
