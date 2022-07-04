@@ -101,7 +101,7 @@ function GPS.Unlock(ply, item)
     print('GPS2 Serverlog : ' .. ply:Name() .. " unlocked " .. GPS.Items[item].ClassName .. " id : w" .. tostring(item) )
     return sql.Query(str)
     -- return false if there is an error or you dont have permissions to unlock
-    -- DOES NOT REMOVE COST!!!
+    --* DOES NOT REMOVE COST!!!
 end
 
 function GPS.Lock(ply, item)
