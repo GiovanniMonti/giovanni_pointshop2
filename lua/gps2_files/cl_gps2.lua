@@ -14,6 +14,7 @@ GPS.Config = {
     ["ButtonColor"] = Color(25, 93, 130),
     ["SelWepColor"] = Color(227, 34, 34),
     ["SelWepColoH"] = Color(212, 59, 59),
+    ["DeleteColor"] = Color( 216,12,12),
 }
 
 function GPS:OpenMenu()
@@ -216,6 +217,14 @@ function GPS:OpenMenu()
         print("GPS2 : SENT NEW WEAPON INFO TO SERVER")
     end
 
+    function frame.adminPanel:DeleteItem()
+        if not self.wepSelect:IsVisible() then 
+            return
+        end
+        local item = self.wepSelect:GetOptionData( self.wepSelect:GetSelectedID() )
+        GPS.ClientShopReq(GPS.NET_ENUM.EDIT, { ['id'] = item })
+        timer.Simple(0, function() GPS.ClientShopReq( GPS.NET_ENUM.WEPTBL ) end)
+    end
 
     local leftMar, spacer, topMar = frame:GetWide()*.02, frame:GetWide()*.014, frame:GetTall()*.22
     local panelWide, panelTall = frame:GetWide() - leftMar*2, frame:GetTall()*.08
@@ -377,6 +386,7 @@ function GPS:OpenMenu()
     end
     frame.adminPanel.submitButton.DoClick = function()
         frame.adminPanel:SendData()
+        timer.Simple(0, function() GPS.ClientShopReq( GPS.NET_ENUM.WEPTBL ) end)
     end
 
     frame.adminPanel.editButton = vgui.Create("DButton",frame)
@@ -395,6 +405,7 @@ function GPS:OpenMenu()
             frame.adminPanel.wepSelect:Hide()
             frame.adminPanel.nameEntry:Show()
             frame.adminPanel.wepSelect:Clear()
+            frame.adminPanel.deleteButton:Hide()
         else
             frame.adminPanel.nameEntry:Hide()
             frame.adminPanel.wepSelect:SetValue("Select Item to edit")
@@ -402,9 +413,35 @@ function GPS:OpenMenu()
                 frame.adminPanel.wepSelect:AddChoice(tbl.ClassName,id)
             end
             frame.adminPanel.wepSelect:Show()
-            
+            frame.adminPanel.deleteButton:Show()
         end
         self.editing = not self.editing
+    end
+    
+    frame.adminPanel.deleteButton = vgui.Create("DButton",frame)
+    frame.adminPanel.deleteButton:SetSize(frame:GetWide()*.25, panelTall)
+    frame.adminPanel.deleteButton:SetPos(frame:GetWide() - leftMar - frame.adminPanel.submitButton:GetWide()*2.05, topMar + (panelTall + spacer)*6)
+    frame.adminPanel.deleteButton:SetFont("GPS::MenuFont")
+    frame.adminPanel.deleteButton:SetText("Delete item")
+    frame.adminPanel.deleteButton:SetTextColor( GPS.Config.LabelColor )
+    frame.adminPanel.deleteButton.Paint = function (self,w,h)
+        draw.RoundedBox(0, 0, 0, w, h, GPS.Config.DeleteColor)
+        surface.SetDrawColor( GPS.Config.LineColor )
+        self:DrawOutlinedRect()
+    end
+    frame.adminPanel.deleteButton.DoClick = function()
+        frame.adminPanel:DeleteItem()
+
+        if frame.adminPanel.teamSelect then frame.adminPanel.teamSelect.temptable = {} end
+        frame.adminPanel.wepSelect:Hide()
+        frame.adminPanel.wepSelect:Clear()
+        frame.adminPanel.nameEntry:Show()
+        frame.adminPanel.nameEntry:SetText('')
+        frame.adminPanel.printEntry:SetText('')
+        frame.adminPanel.priceEntry:SetText('')
+        frame.adminPanel.categoryEntry:SetText('')
+        frame.adminPanel.modelEntry:SetText('')
+        frame.adminPanel.groupSelect:SetValue( "Pick a group" )
     end
 
     function frame.adminPanel:Hide()
@@ -418,6 +455,7 @@ function GPS:OpenMenu()
         self.submitButton:Hide()
         self.editButton:Hide()
         self.wepSelect:Hide()
+        self.deleteButton:Hide()
     end
 
     function frame.adminPanel:Show()
@@ -430,6 +468,10 @@ function GPS:OpenMenu()
         self.teamSelect:Show()
         self.submitButton:Show()
         self.editButton:Show()
+        if self.editButton.editing then 
+            self.wepSelect:Show()
+            self.deleteButton:Show()
+        end
     end
 
     frame.adminPanel:Hide()
@@ -793,14 +835,18 @@ function GPS.ClientShopReq(requestType, args)
         net.WriteUInt(args[1], 8)
     elseif requestType == 4 or requestType == 5 then
         -- edit/add items
-        net.WriteString(args.Class)
-        net.WriteString(args.Print)
-        net.WriteUInt(args.Price, 32)
-        net.WriteString(args.Category)
-        net.WriteString(args.Model)
-        net.WriteUInt(args.Group, 2)
-        net.WriteUInt(table.Count(args.Teams), 8)
-        if table.Count(args.Teams) > 0 then 
+        if not args.id and requestType == 5 then return end -- dont fuck up
+        if not args.Class and requestType == 4 then return end
+
+        net.WriteString(args.Class or 'GPS__DELETE')
+        net.WriteString(args.Print or '')
+        net.WriteUInt(args.Price or 0, 32)
+        net.WriteString(args.Category or '')
+        net.WriteString(args.Model or '')
+        net.WriteUInt(args.Group or 0, 2)
+        local teamCount = table.Count(args.Teams or {} )
+        net.WriteUInt(teamCount, 8)
+        if teamCount > 0 then 
             for team,_ in pairs(args.Teams) do
                 net.WriteUInt(team, 8)
             end

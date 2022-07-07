@@ -40,8 +40,9 @@ function GPS.AddToDB(item)
 end
 
 function GPS.RemoveFromDB(item)
+    
     if not item or not GPS.Items[item] or not weapons.GetStored( GPS.Items[item].ClassName ) then return false end
-   
+    GPS.Items[item] = nil
     local str =  "CREATE TABLE GPS_TEMP ( SID64 NVARCHAR , "
     local str2 = "SID64, "
     
@@ -54,6 +55,7 @@ function GPS.RemoveFromDB(item)
         str = string.Left(str, #str-2) .. " );"
         str2 = string.Left(str2, #str2-2)
         
+        print(str)
         sql.Query(str) -- creates the table GPS_Temp
 
         sql.Query('INSERT INTO GPS_TEMP ( ' .. str2 .. ' ) SELECT  ' .. str2 .. '  FROM GPS2 ;')

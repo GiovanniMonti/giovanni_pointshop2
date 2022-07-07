@@ -271,6 +271,13 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
             end
         end
         tbl.id = net.ReadUInt(8)
+
+        if tbl.ClassName == 'GPS__DELETE' then
+            print("GPS : ITEM " .. tbl.id .. " BEING DELETED.")
+            GPS.RemoveFromDB(tbl.id)
+            return
+        end
+
         print("GPS : " .. ply:Nick() .. " adding new / editing weapon : ")
         PrintTable(tbl)
         if GPS.Items[id] and GPS.Items[id].ClassName == tbl.ClassName then
