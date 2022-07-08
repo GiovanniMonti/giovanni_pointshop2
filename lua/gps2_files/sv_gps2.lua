@@ -256,7 +256,6 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         if not GPS.Config.CustomAdminCheck(ply) then return end
 
         local tbl = {}
-        tbl.Teams = {}
         tbl.ClassName = net.ReadString()
         tbl.PrintName = net.ReadString()
         tbl.Price = net.ReadUInt(32) or 0
@@ -265,6 +264,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         tbl.Group = net.ReadUInt(2)
         local teamNum = net.ReadUInt(8) or 0
         if teamNum > 0 then
+            tbl.Teams = {}
             for i = 1, teamNum do
                 tbl.Teams[net.ReadUInt(8)] = true
             end

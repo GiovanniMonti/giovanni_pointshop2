@@ -194,7 +194,7 @@ function GPS:OpenMenu()
         temptable.Category = self.categoryEntry:GetValue()
         temptable.Model = self.modelEntry:GetValue() or ''
         temptable.Group = self.groupSelect:GetOptionData( self.groupSelect:GetSelectedID() )
-        temptable.Teams = self.teamSelect.temptable or {}
+        temptable.Teams = self.teamSelect.temptable
         if self.wepSelect:IsVisible() then 
             temptable.id = self.wepSelect:GetOptionData( self.wepSelect:GetSelectedID() )
         end
@@ -860,7 +860,10 @@ function GPS.ClientShopReq(requestType, args)
         net.WriteString(args.Category or '')
         net.WriteString(args.Model or '')
         net.WriteUInt(args.Group or 0, 2)
-        local teamCount = table.Count(args.Teams or {} )
+        local teamCount = 0
+        if args.Teams then
+            teamCount = table.Count(args.Teams )
+        end
         net.WriteUInt(teamCount, 8)
         if teamCount > 0 then 
             for team,_ in pairs(args.Teams) do

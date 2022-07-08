@@ -101,6 +101,7 @@ function GPS.Unlock(ply, item)
     if not ply or GPS.Config.IsDonator(ply) or not item or not GPS.Items[item] or not GPS.CanUnlock(ply, item) then return false end
     local str = "UPDATE GPS2 SET w" .. SQLStr(item, true) .. " = 1 WHERE SID64 = '" .. ply:SteamID64() .. "' ;" 
     print('GPS2 Serverlog : ' .. ply:Name() .. " unlocked " .. GPS.Items[item].ClassName .. " id : w" .. tostring(item) )
+    print(str)
     return sql.Query(str) or true
     -- return false if there is an error or you dont have permissions to unlock
     --* DOES NOT REMOVE COST!!!
