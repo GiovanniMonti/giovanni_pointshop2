@@ -55,14 +55,14 @@ function GPS.RemoveFromDB(item)
         str = string.Left(str, #str-2) .. " );"
         str2 = string.Left(str2, #str2-2)
         
-        print(str)
+        --print(str)
         sql.Query(str) -- creates the table GPS_Temp
 
         sql.Query('INSERT INTO GPS_TEMP ( ' .. str2 .. ' ) SELECT  ' .. str2 .. '  FROM GPS2 ;')
         sql.Query('DROP TABLE GPS2;')
         sql.Query('ALTER TABLE GPS_TEMP RENAME TO GPS2;')
       
-    elseif GPS.Items and table.Count(GPS.Items) == 0 then
+    elseif GPS.Items and table.Count(GPS.Items) <= 1 then
         GPS.ResetItemData()
     end
 end
@@ -101,7 +101,7 @@ function GPS.Unlock(ply, item)
     if not ply or GPS.Config.IsDonator(ply) or not item or not GPS.Items[item] or not GPS.CanUnlock(ply, item) then return false end
     local str = "UPDATE GPS2 SET w" .. SQLStr(item, true) .. " = 1 WHERE SID64 = '" .. ply:SteamID64() .. "' ;" 
     print('GPS2 Serverlog : ' .. ply:Name() .. " unlocked " .. GPS.Items[item].ClassName .. " id : w" .. tostring(item) )
-    return sql.Query(str)
+    return sql.Query(str) or true
     -- return false if there is an error or you dont have permissions to unlock
     --* DOES NOT REMOVE COST!!!
 end

@@ -44,7 +44,7 @@ function GPS:OpenMenu()
         surface.SetDrawColor( GPS.Config.LineColor )
         surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .18, self:GetWide() * .98 , self:GetTall() * .18)
         surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .12, self:GetWide()*.2 , self:GetTall() * .18)
-        draw.SimpleText("Points : " .. LocalPlayer():GetNWInt("GPS2_Points"), "GPS::MenuFont", self:GetWide()*.02 , self:GetTall()*.12, GPS.Config.LabelColor)
+        draw.SimpleText("Points : " .. LocalPlayer():GetNWInt("GPS2_Points"), "GPS::MenuFont", self:GetWide()*.025 , self:GetTall()*.12, GPS.Config.LabelColor)
         self:AdditionalPaint(w,h)
     end
 
@@ -263,6 +263,19 @@ function GPS:OpenMenu()
     frame.adminPanel.wepSelect:SetSize( panelWide, panelTall)
     frame.adminPanel.wepSelect:SetFont("GPS::MenuFont")
     frame.adminPanel.wepSelect:Hide()
+
+    local wepsel_oldclear = frame.adminPanel.wepSelect.Clear
+    frame.adminPanel.wepSelect.Clear = function(self)
+        wepsel_oldclear(self)
+        frame.adminPanel.nameEntry:SetValue('')
+        if frame.adminPanel.teamSelect then frame.adminPanel.teamSelect.temptable = {} end
+        frame.adminPanel.printEntry:SetText('')
+        frame.adminPanel.priceEntry:SetText('')
+        frame.adminPanel.categoryEntry:SetText('')
+        frame.adminPanel.modelEntry:SetText('')
+        frame.adminPanel.groupSelect:SetValue( "Pick a group" )
+    end
+
     frame.adminPanel.wepSelect.OnSelect = function(self,ind,val,dat)
         frame.adminPanel.nameEntry:SetValue(val)
         if frame.adminPanel.teamSelect then frame.adminPanel.teamSelect.temptable = {} end
@@ -277,7 +290,9 @@ function GPS:OpenMenu()
         frame.adminPanel.printEntry:SetValue( GPS.ClItems[dat].PrintName )
         frame.adminPanel.categoryEntry:SetValue( GPS.ClItems[dat].Category )
         frame.adminPanel.modelEntry:SetValue( GPS.ClItems[dat].Model )
+        frame.adminPanel.deleteButton:Show()
     end
+    
     
 
     frame.adminPanel.printEntry = vgui.Create("DTextEntry", frame)
@@ -406,6 +421,7 @@ function GPS:OpenMenu()
             frame.adminPanel.nameEntry:Show()
             frame.adminPanel.wepSelect:Clear()
             frame.adminPanel.deleteButton:Hide()
+            
         else
             frame.adminPanel.nameEntry:Hide()
             frame.adminPanel.wepSelect:SetValue("Select Item to edit")
@@ -413,7 +429,7 @@ function GPS:OpenMenu()
                 frame.adminPanel.wepSelect:AddChoice(tbl.ClassName,id)
             end
             frame.adminPanel.wepSelect:Show()
-            frame.adminPanel.deleteButton:Show()
+            
         end
         self.editing = not self.editing
     end

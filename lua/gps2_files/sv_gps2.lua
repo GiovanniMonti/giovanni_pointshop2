@@ -196,8 +196,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         if not GPS.GetPoints(ply) or GPS.GetPoints(ply) < GPS.Items[id].Price then 
             GPS.LegacyNotifyPlayer(ply, "You do not have the funds to buy this item!",  GPS.NOTIFY.ERROR)
         end
-        GPS.Unlock(ply,id)
-        GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[id].Price )
+        if GPS.Unlock(ply,id) then GPS.SetPoints(ply, GPS.GetPoints(ply) - GPS.Items[id].Price ) end
 
     elseif requestType == 3 then
         --* sell an item
