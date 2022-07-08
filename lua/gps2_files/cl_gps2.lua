@@ -558,7 +558,7 @@ function GPS:OpenMenu()
         frame.loadoutSelect[2]:Clear()
         frame.loadoutSelect[3]:Clear()
         for id,tbl in pairs(GPS.ClItems) do
-            if not GPSPlyData.isdonator and not tbl.Owned then continue end 
+            if (not GPSPlyData.isdonator and not tbl.Owned) or (GPSPlyData.isadmin and not tbl.Visible) then continue end 
             local curItem = self[tbl.Group]:Add("DPanel")
             curItem:SetSize( self[tbl.Group]:GetWide()*0.95, self[tbl.Group]:GetTall()*0.2)
             curItem:Dock( TOP )
@@ -656,6 +656,9 @@ function GPS:OpenMenu()
         self:Clear()
         if table.IsEmpty( GPS.ItemsByCateogry ) then return end
         for id,_ in pairs(GPS.ItemsByCateogry[frame.catSelect.GetSelected():GetText()]) do
+
+            if (GPSPlyData.isadmin and not GPS.ClItems[id].Visible) then continue end
+
             local curItem = self:Add("DPanel")
             curItem:Dock( TOP )
             curItem:SetSize(self:GetWide()*0.85, self:GetTall()*0.3)
@@ -893,6 +896,7 @@ net.Receive("GPS2_SendToClient",function()
         GPS.ClItems[id].Group = net.ReadUInt(2)
         GPS.ClItems[id].Model = net.ReadString()
         GPS.ClItems[id].Owned = net.ReadBool() -- just for gui, not used in real checks.
+        if GPSPlyData.isadmin then GPS.ClItems[id].Visible = net.ReadBool() end-- just for admin gui, not used in real checks.
 
         if not table.HasValue(GPS.WepCategories, GPS.ClItems[id].Category) then
             table.insert(GPS.WepCategories, GPS.ClItems[id].Category)

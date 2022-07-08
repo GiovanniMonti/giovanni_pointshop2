@@ -120,18 +120,19 @@ end
 -- send only what you need
 function GPS.VisibleItems(ply)
     if not ply then return false end
-    --if GPS.Config.CustomAdminCheck(ply) then return GPS.Items end for debugging
+    if GPS.Config.CustomAdminCheck(ply) then return GPS.Items, true end
     local visibleItems = {}
     for id, tbl in pairs(GPS.Items) do
         if ( not tbl.Teams ) or tbl.Teams[ply:Team()] then
             visibleItems[id] = tbl
         end
     end
-    return visibleItems
+    return visibleItems, false
 end
 
 function GPS.SendWepsToClient(ply)
-    local VisibleItems = GPS.VisibleItems(ply)
+    local VisibleItems, isadmin = GPS.VisibleItems(ply)
+    -- ISADMIN IS ALREADY SENT ON MENU BEING OPENED - DO NOT SEND AGAIN.
     net.Start("GPS2_SendToClient",false)
         net.WriteUInt( table.Count( VisibleItems ), 8)
         for id,tbl in pairs( VisibleItems ) do
@@ -143,6 +144,8 @@ function GPS.SendWepsToClient(ply)
             net.WriteUInt(tbl.Group, 2)
             net.WriteString(tbl.Model)
             net.WriteBool(GPS.HasItem(ply,id))
+            if isadmin then net.WriteBool( ( not tbl.Teams ) or tbl.Teams[ply:Team()] ) end
+
             local nTeams = 0
             if not tbl.teams then 
                 nTeams = 0 
