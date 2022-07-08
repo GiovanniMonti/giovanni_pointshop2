@@ -753,6 +753,15 @@ function GPS:OpenMenu()
     function frame.catSelect.GetSelected() return frame.catSelect.selected end
     function frame.catSelect:Update()
         for k, category in ipairs(GPS.WepCategories) do
+            -- check if cat is not visible at all
+            local skip = true
+            for _,id in pairs(category) do
+                if GPS.ClItems[id].Visible then
+                    skip = false
+                end
+
+            end
+
             local catLabel = self:Add("DLabel")
             catLabel:SetText( tostring(category) )
             catLabel:Dock( TOP )
