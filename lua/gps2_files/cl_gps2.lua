@@ -917,8 +917,8 @@ net.Receive("GPS2_SendToClient",function()
         end
 
         local nTeams = net.ReadUInt(8)
-        GPS.ClItems[id].Teams = {}
         if nTeams < 1 then goto cont end
+        GPS.ClItems[id].Teams = {}
         for j = 1, nTeams do
             GPS.ClItems[id].Teams[net.ReadUInt(8)] = true
         end
