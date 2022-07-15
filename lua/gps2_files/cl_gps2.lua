@@ -888,12 +888,12 @@ function GPS.ClientShopReq(requestType, args)
     net.SendToServer()
 end
 
-net.Receive("GPS2_SendToClient",function()
+net.Receive("GPS2_SendToClient",function(len)
     table.Empty( GPS.WepCategories )
     table.Empty( GPS.ClItems )
     table.Empty( GPS.ItemsByCateogry )
     table.Empty( GPS.ItemsByName )
-    
+    print(len)
     local nItems = net.ReadUInt(8)
     for i = 1, nItems do
         local id = net.ReadUInt(8)
@@ -905,6 +905,7 @@ net.Receive("GPS2_SendToClient",function()
         GPS.ClItems[id].Group = net.ReadUInt(2)
         GPS.ClItems[id].Model = net.ReadString()
         GPS.ClItems[id].Owned = net.ReadBool() -- just for gui, not used in real checks.
+        GPSPlyData.isadmin = net.ReadBool()
         if GPSPlyData.isadmin then GPS.ClItems[id].Visible = net.ReadBool() end-- just for admin gui, not used in real checks.
 
         if not table.HasValue(GPS.WepCategories, GPS.ClItems[id].Category) then
@@ -918,7 +919,9 @@ net.Receive("GPS2_SendToClient",function()
 
         local nTeams = net.ReadUInt(8)
         if nTeams < 1 then goto cont end
+
         GPS.ClItems[id].Teams = {}
+
         for j = 1, nTeams do
             GPS.ClItems[id].Teams[net.ReadUInt(8)] = true
         end

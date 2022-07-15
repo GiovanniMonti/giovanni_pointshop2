@@ -144,6 +144,7 @@ function GPS.SendWepsToClient(ply)
             net.WriteUInt(tbl.Group, 2)
             net.WriteString(tbl.Model)
             net.WriteBool(GPS.HasItem(ply,id))
+            net.WriteBool(isadmin)
             if isadmin then net.WriteBool( ( not tbl.Teams ) or tbl.Teams[ply:Team()] ) end
 
             local nTeams = 0
@@ -154,10 +155,11 @@ function GPS.SendWepsToClient(ply)
             end
             net.WriteUInt(nTeams, 8)
             if nTeams < 1 then continue end
-            for team,_ in pairs(tbl.Teams) do
-                net.WriteUInt(team, 8)
+            for ateam,_ in pairs(tbl.Teams) do
+                net.WriteUInt(ateam, 8)
             end
         end
+        print(net.BytesWritten())
     net.Send(ply)
 end
 
