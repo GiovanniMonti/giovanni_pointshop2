@@ -755,7 +755,7 @@ function GPS:OpenMenu()
         for k, category in ipairs(GPS.WepCategories) do
             -- check if cat is not visible at all
             local skip = true
-            for _,id in pairs(category) do
+            for id,_ in pairs(GPS.ItemsByCateogry[category]) do
                 if GPS.ClItems[id].Visible then
                     skip = false
                 end
