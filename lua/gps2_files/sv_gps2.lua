@@ -159,7 +159,7 @@ function GPS.SendWepsToClient(ply)
                 net.WriteUInt(ateam, 8)
             end
         end
-        print(net.BytesWritten())
+        --print(net.BytesWritten()) debugging
     net.Send(ply)
 end
 

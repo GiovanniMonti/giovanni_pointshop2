@@ -893,7 +893,7 @@ net.Receive("GPS2_SendToClient",function(len)
     table.Empty( GPS.ClItems )
     table.Empty( GPS.ItemsByCateogry )
     table.Empty( GPS.ItemsByName )
-    print(len)
+    --print(len) debugging
     local nItems = net.ReadUInt(8)
     for i = 1, nItems do
         local id = net.ReadUInt(8)
