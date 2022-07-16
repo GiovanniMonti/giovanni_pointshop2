@@ -208,6 +208,7 @@ function GPS:OpenMenu()
         frame.adminPanel.categoryEntry:SetText('')
         frame.adminPanel.modelEntry:SetText('')
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
+        frame.adminPanel.teamSelect.temptable = nil
         print("GPS2 : SENDING NEW WEAPON INFO TO SERVER ...")
         if self.wepSelect:IsVisible() then
             GPS.ClientShopReq(GPS.NET_ENUM.EDIT, temptable)
@@ -274,6 +275,7 @@ function GPS:OpenMenu()
         frame.adminPanel.categoryEntry:SetText('')
         frame.adminPanel.modelEntry:SetText('')
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
+        frame.adminPanel.teamSelect.temptable = nil
     end
 
     frame.adminPanel.wepSelect.OnSelect = function(self,ind,val,dat)
@@ -290,6 +292,7 @@ function GPS:OpenMenu()
         frame.adminPanel.printEntry:SetValue( GPS.ClItems[dat].PrintName )
         frame.adminPanel.categoryEntry:SetValue( GPS.ClItems[dat].Category )
         frame.adminPanel.modelEntry:SetValue( GPS.ClItems[dat].Model )
+        frame.adminPanel.teamSelect.temptable = GPS.ClItems[dat].Teams
         frame.adminPanel.deleteButton:Show()
     end
     
@@ -361,7 +364,7 @@ function GPS:OpenMenu()
     frame.adminPanel.teamSelect:SetText("Manage Teams")
     frame.adminPanel.teamSelect:SetTextColor( GPS.Config.LabelColor )
     frame.adminPanel.teamSelect:SetPaintBackground(false)
-    frame.adminPanel.teamSelect.temptable = {}
+    frame.adminPanel.teamSelect.temptable = nil
     frame.adminPanel.teamSelect.Paint = function (self,w,h)
         draw.RoundedBox(0, 0, 0, w, h, GPS.Config.ButtonColor)
         surface.SetDrawColor( GPS.Config.LineColor )
@@ -369,21 +372,37 @@ function GPS:OpenMenu()
     end
     frame.adminPanel.teamSelect.DoClick = function(self) 
         if not frame.adminPanel.nameEntry:GetValue() or frame.adminPanel.nameEntry:GetValue() == '' then return end
+        
         local allSelected = false
-        if not self.temptable then
+        local curWep = GPS.ItemsByName[ frame.adminPanel.nameEntry:GetValue() ]
+
+        if not GPS.ClItems[ curWep ].Teams and not self.temptable then
             allSelected = true
+            self.temptable = {}
+            for k,_ in pairs( team.GetAllTeams() ) do
+                self.temptable[k] = true 
+            end
         end
 
+
         local TeamsMenu = DermaMenu()
+        --PrintTable(self.temptable)
         for k,_ in pairs( team.GetAllTeams() ) do
-            if allSelected then self.temptable[ k ] = true end
+            
+           
+            --print(k,self.temptable[ k ])
+
             local option = TeamsMenu:AddOption(team.GetName(k), function()
+
                 if self.temptable[ k ] then self.temptable[ k ] = nil
                 else self.temptable[ k ] = true end
+
             end)
+
             if self.temptable[ k ] then
                 option:SetIcon("icon16/tick.png")
             end
+
         end
         TeamsMenu:Open()
     end
@@ -448,7 +467,7 @@ function GPS:OpenMenu()
     frame.adminPanel.deleteButton.DoClick = function()
         frame.adminPanel:DeleteItem()
 
-        if frame.adminPanel.teamSelect then frame.adminPanel.teamSelect.temptable = {} end
+        frame.adminPanel.teamSelect.temptable = nil
         frame.adminPanel.wepSelect:Hide()
         frame.adminPanel.wepSelect:Clear()
         frame.adminPanel.nameEntry:Show()
@@ -458,6 +477,7 @@ function GPS:OpenMenu()
         frame.adminPanel.categoryEntry:SetText('')
         frame.adminPanel.modelEntry:SetText('')
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
+        
     end
 
     function frame.adminPanel:Hide()
@@ -926,7 +946,7 @@ net.Receive("GPS2_SendToClient",function(len)
             GPS.ClItems[id].Teams[net.ReadUInt(8)] = true
         end
         ::cont::
-        GPS.ItemsByName[GPS.ClItems[id].ClassName] = true
+        GPS.ItemsByName[GPS.ClItems[id].ClassName] = id
         GPS.ItemsByCateogry[GPS.ClItems[id].Category][id] = true
     end
 end)
