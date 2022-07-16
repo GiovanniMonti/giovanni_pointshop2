@@ -584,6 +584,10 @@ function GPS:OpenMenu()
             curItem:Dock( TOP )
             curItem:DockMargin(0,curItem:GetTall()*.1,0,0)
 
+            if GPS:IsSelected(id) then
+                self[tbl.Group]:ScrollToChild(curItem)
+            end
+
             function curItem:Paint()
                 surface.SetDrawColor( GPS.Config.LineColor )
                 self:DrawOutlinedRect()
