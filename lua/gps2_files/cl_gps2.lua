@@ -779,8 +779,8 @@ function GPS:OpenMenu()
                 if GPS.ClItems[id].Visible then
                     skip = false
                 end
-
             end
+            if skip then continue end
 
             local catLabel = self:Add("DLabel")
             catLabel:SetText( tostring(category) )
