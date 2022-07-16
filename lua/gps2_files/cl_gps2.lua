@@ -376,7 +376,7 @@ function GPS:OpenMenu()
         local allSelected = false
         local curWep = GPS.ItemsByName[ frame.adminPanel.nameEntry:GetValue() ]
 
-        if not GPS.ClItems[ curWep ].Teams and not self.temptable then
+        if (GPS.ClItems[ curWep ] and not GPS.ClItems[ curWep ].Teams) and not self.temptable then
             allSelected = true
             self.temptable = {}
             for k,_ in pairs( team.GetAllTeams() ) do
