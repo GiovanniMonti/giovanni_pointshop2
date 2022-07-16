@@ -347,6 +347,8 @@ end )
 
 hook.Add("PlayerInitialSpawn","GPS_SetTokenTimer",function(pl)
 
+    pl:SetNWInt("GPS2_Points", GPS.GetPoints(pl) )
+
     timer.Create("timer"..pl:SteamID(),GPS.Config.tokenTimeDelay,0,function()
         local ply = pl
         if not ply:IsValid() then timer.Remove("timer"..pl:SteamID()) return end
