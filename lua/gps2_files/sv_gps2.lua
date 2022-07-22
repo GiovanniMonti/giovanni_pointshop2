@@ -224,11 +224,11 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         tbl.Teams = {}
         tbl.ClassName = net.ReadString()
         tbl.PrintName = net.ReadString()
-        tbl.Price = net.ReadUInt(32) or 0
+        tbl.Price = net.ReadUInt(32)
         tbl.Category = net.ReadString()
         tbl.Model = net.ReadString()
         tbl.Group = net.ReadUInt(2)
-        local teamNum = net.ReadUInt(8) or 0
+        local teamNum = net.ReadUInt(8)
         if teamNum > 0 then
             for i = 1, teamNum do
                 tbl.Teams[net.ReadUInt(8)] = true
