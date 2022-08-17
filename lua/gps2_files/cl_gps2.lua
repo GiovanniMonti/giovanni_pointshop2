@@ -6,10 +6,10 @@ local GPSPlyData = {}
 
 GPS.Config = {
     ["LabelColor"] = Color(255, 255, 255),
-    ["LabelColorH"] = Color(61, 123, 224),
-    ["LabelColorS"] = Color(39, 94, 184),
-    ["LabelColorSH"] = Color(108, 130, 166),
-    ["BackgroundColor"] = Color(87,87,87,229),
+    ["LabelColorH"] = Color(151, 151, 151),
+    ["LabelColorS"] = Color(51, 146, 255),
+    ["LabelColorSH"] = Color(88, 145, 209),
+    ["BackgroundColor"] = Color(87,87,87,232),
     ["LineColor"] = Color(197, 197, 197),
     ["ButtonColor"] = Color(25, 93, 130),
     ["SelWepColor"] = Color(227, 34, 34),
