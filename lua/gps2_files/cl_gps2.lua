@@ -9,12 +9,13 @@ GPS.Config = {
     ["LabelColorH"] = Color(61, 123, 224),
     ["LabelColorS"] = Color(39, 94, 184),
     ["LabelColorSH"] = Color(108, 130, 166),
-    ["BackgroundColor"] = Color(58,58,58,230),
-    ["LineColor"] = Color(122, 121, 121),
+    ["BackgroundColor"] = Color(87,87,87,229),
+    ["LineColor"] = Color(197, 197, 197),
     ["ButtonColor"] = Color(25, 93, 130),
     ["SelWepColor"] = Color(227, 34, 34),
     ["SelWepColoH"] = Color(212, 59, 59),
     ["DeleteColor"] = Color( 216,12,12),
+    ["CloseBtnColor"] = Color(255, 255, 255),
 }
 
 function GPS:OpenMenu()
@@ -29,7 +30,7 @@ function GPS:OpenMenu()
 
     function frame:AdditionalPaint(w,h)
         if self.CurTab == 0 then 
-            surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.18, self:GetWide() * 0.2 , self:GetTall() * 0.98)
+            surface.DrawLine(self:GetWide() * 0.2 , self:GetTall() * 0.11, self:GetWide() * 0.2 , self:GetTall() * 0.98)
             return 
         end
         if self.CurTab == 1 then
@@ -42,9 +43,9 @@ function GPS:OpenMenu()
     function frame:Paint(w,h)
         draw.RoundedBox(4, 0, 0, w, h, GPS.Config.BackgroundColor)
         surface.SetDrawColor( GPS.Config.LineColor )
-        surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .18, self:GetWide() * .98 , self:GetTall() * .18)
-        surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .12, self:GetWide()*.2 , self:GetTall() * .18)
-        draw.SimpleText("Points : " .. LocalPlayer():GetNWInt("GPS2_Points"), "GPS::MenuFont", self:GetWide()*.025 , self:GetTall()*.12, GPS.Config.LabelColor)
+        surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .11, self:GetWide() * .98 , self:GetTall() * .11)
+        surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .05, self:GetWide()*.2 , self:GetTall() * .11)
+        draw.SimpleText("Points : " .. LocalPlayer():GetNWInt("GPS2_Points"), "GPS::MenuFont", self:GetWide()*.025 , self:GetTall()*.05, GPS.Config.LabelColor)
         self:AdditionalPaint(w,h)
     end
 
@@ -80,6 +81,7 @@ function GPS:OpenMenu()
 	frame.closeBtn:SetText( "" )
 	frame.closeBtn.DoClick = function ( button ) frame:Remove() end
     frame.closeBtn:SetImage("cross_icon.png")
+    frame.closeBtn:SetColor( GPS.Config.CloseBtnColor )
     frame.closeBtn:SizeToContents()
     frame.closeBtn:SetSize( frame.closeBtn:GetWide()*0.4, frame.closeBtn:GetTall()*0.4 )
     frame.closeBtn:SetPos( frame:GetWide() - frame.closeBtn:GetWide()*1.4, frame:GetTall()*0.02 )
@@ -90,7 +92,7 @@ function GPS:OpenMenu()
     frame.tabSelect[1]:SetFont("GPS::DermaLarge")
     frame.tabSelect[1]:SetText("Shop")
     frame.tabSelect[1]:SizeToContents()
-    frame.tabSelect[1]:SetPos(frame:GetWide()*0.25 - frame.tabSelect[1]:GetWide()/2 ,frame:GetTall()*0.12)
+    frame.tabSelect[1]:SetPos(frame:GetWide()*0.25 - frame.tabSelect[1]:GetWide()/2 ,frame:GetTall()*0.05)
     frame.tabSelect[1]:SetMouseInputEnabled(true)
     frame.tabSelect[1].DoClick = function()
         frame:ChangeToTab(0)
@@ -114,7 +116,7 @@ function GPS:OpenMenu()
     frame.tabSelect[2]:SetFont("GPS::DermaLarge")
     frame.tabSelect[2]:SetText("Loadout")
     frame.tabSelect[2]:SizeToContents()
-    frame.tabSelect[2]:SetPos(frame:GetWide()*0.40 - frame.tabSelect[2]:GetWide()/2,frame:GetTall()*0.12)
+    frame.tabSelect[2]:SetPos(frame:GetWide()*0.40 - frame.tabSelect[2]:GetWide()/2,frame:GetTall()*0.05)
     frame.tabSelect[2]:SetMouseInputEnabled(true)
     frame.tabSelect[2].DoClick = function()
         frame:ChangeToTab(1)
@@ -139,7 +141,7 @@ function GPS:OpenMenu()
         frame.tabSelect[3]:SetFont("GPS::DermaLarge")
         frame.tabSelect[3]:SetText("Admin")
         frame.tabSelect[3]:SizeToContents()
-        frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.12)
+        frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.05)
         frame.tabSelect[3]:SetMouseInputEnabled(true)
         frame.tabSelect[3].DoClick = function()
             frame:ChangeToTab(2)
@@ -527,9 +529,9 @@ function GPS:OpenMenu()
     frame.groupLabels[1]:SizeToContents()
     frame.groupLabels[2]:SizeToContents()
     frame.groupLabels[3]:SizeToContents()
-    frame.groupLabels[1]:SetPos(frame:GetWide()/6- frame.groupLabels[1]:GetWide()/2,frame:GetTall()*.2)
-    frame.groupLabels[2]:SetPos(frame:GetWide()*.5-frame.groupLabels[2]:GetWide()/2,frame:GetTall()*.2)
-    frame.groupLabels[3]:SetPos(frame:GetWide()*(5/6)-frame.groupLabels[3]:GetWide()/2,frame:GetTall()*.2)
+    frame.groupLabels[1]:SetPos(frame:GetWide()/6- frame.groupLabels[1]:GetWide()/2,frame:GetTall()*.13)
+    frame.groupLabels[2]:SetPos(frame:GetWide()*.5-frame.groupLabels[2]:GetWide()/2,frame:GetTall()*.13)
+    frame.groupLabels[3]:SetPos(frame:GetWide()*(5/6)-frame.groupLabels[3]:GetWide()/2,frame:GetTall()*.13)
     function frame.groupLabels:Show()
         self[1]:Show()
         self[2]:Show()
@@ -545,7 +547,7 @@ function GPS:OpenMenu()
     frame.loadoutSelect = {}
     frame.loadoutSelect[1] = vgui.Create("DScrollPanel", frame)
     frame.loadoutSelect[1]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
-    frame.loadoutSelect[1]:SetPos(frame:GetWide()*0.04,frame:GetTall()*0.3)
+    frame.loadoutSelect[1]:SetPos(frame:GetWide()*0.04,frame:GetTall()*0.18)
     frame.loadoutSelect[1]:Hide()
     frame.loadoutSelect[1].VBar.Paint = function(self,w,h) end
     frame.loadoutSelect[1].VBar:SetHideButtons( true )
@@ -555,7 +557,7 @@ function GPS:OpenMenu()
 
     frame.loadoutSelect[2] = vgui.Create("DScrollPanel", frame)
     frame.loadoutSelect[2]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
-    frame.loadoutSelect[2]:SetPos(frame:GetWide()*0.5 - frame.loadoutSelect[2]:GetWide()/2 ,frame:GetTall()*0.3)
+    frame.loadoutSelect[2]:SetPos(frame:GetWide()*0.5 - frame.loadoutSelect[2]:GetWide()/2 ,frame:GetTall()*0.18)
     frame.loadoutSelect[2]:Hide()
     frame.loadoutSelect[2].VBar.Paint = function(self,w,h) end
     frame.loadoutSelect[2].VBar:SetHideButtons( true )
@@ -565,7 +567,7 @@ function GPS:OpenMenu()
 
     frame.loadoutSelect[3] = vgui.Create("DScrollPanel", frame)
     frame.loadoutSelect[3]:SetSize(frame:GetWide()/3.5,frame:GetTall()*0.68)
-    frame.loadoutSelect[3]:SetPos(frame:GetWide()*0.67,frame:GetTall()*0.3)
+    frame.loadoutSelect[3]:SetPos(frame:GetWide()*0.67,frame:GetTall()*0.18)
     frame.loadoutSelect[3]:Hide()
     frame.loadoutSelect[3].VBar.Paint = function(self,w,h) end
     frame.loadoutSelect[3].VBar:SetHideButtons( true )
@@ -668,8 +670,8 @@ function GPS:OpenMenu()
     --* SHOP CODE STARTS
 
     frame.itemShop = vgui.Create("DScrollPanel", frame) 
-    frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.22)
-    frame.itemShop:SetSize(frame:GetWide()*0.72,frame:GetTall()*0.76)
+    frame.itemShop:SetPos(frame:GetWide()*0.225,frame:GetTall()*0.12)
+    frame.itemShop:SetSize(frame:GetWide()*0.72,frame:GetTall()*0.86)
     frame.itemShop.VBar.Paint = function(self,w,h) end
     frame.itemShop.VBar:SetHideButtons( true )
     frame.itemShop.VBar.btnGrip.Paint = function(self,w,h)
@@ -772,8 +774,8 @@ function GPS:OpenMenu()
         end
     end
     frame.catSelect = vgui.Create("DScrollPanel", frame )
-    frame.catSelect:SetPos(frame:GetWide()*0.01,frame:GetTall()*0.22)
-    frame.catSelect:SetSize(frame:GetWide()*0.18,frame:GetTall()*0.78)
+    frame.catSelect:SetPos(frame:GetWide()*0.01,frame:GetTall()*0.12)
+    frame.catSelect:SetSize(frame:GetWide()*0.18,frame:GetTall()*0.88)
     function frame.catSelect.GetSelected() return frame.catSelect.selected end
     function frame.catSelect:Update()
         for k, category in ipairs(GPS.WepCategories) do
@@ -791,7 +793,7 @@ function GPS:OpenMenu()
             catLabel:Dock( TOP )
             catLabel:SetFont("GPS::DermaLarge")
             catLabel:SizeToContents()
-            catLabel:DockMargin(ScrW()*0.02, catLabel:GetTall()*.2, 0, ScrH()/216)
+            catLabel:DockMargin(ScrW()*0.02, catLabel:GetTall()*.3, 0, ScrH()/216)
             catLabel:SetMouseInputEnabled( true )
             catLabel.selected = false
             function catLabel:SelectThis()
