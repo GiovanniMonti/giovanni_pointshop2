@@ -231,7 +231,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         local teamNum = net.ReadUInt(8)
         if teamNum > 0 then
             for i = 1, teamNum do
-                tbl.Teams[net.ReadUInt(8)] = true
+                tbl.Teams[net.ReadUInt(16)] = true
             end
         end
 
@@ -271,7 +271,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
         if teamNum > 0 then
             tbl.Teams = {}
             for i = 1, teamNum do
-                tbl.Teams[net.ReadUInt(8)] = true
+                tbl.Teams[net.ReadUInt(16)] = true
             end
         end
         tbl.id = net.ReadUInt(8)

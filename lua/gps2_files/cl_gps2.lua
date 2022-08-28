@@ -16,7 +16,13 @@ GPS.Config = {
     ["SelWepColoH"] = Color(212, 59, 59),
     ["DeleteColor"] = Color( 216,12,12),
     ["CloseBtnColor"] = Color(255, 255, 255),
+    ["ButtonBackground"] = Color(41,40,40,252),
 }
+--[[
+local button_drawfunc = function(self,w,h)
+    --self:DrawOutlinedRect()
+    draw.RoundedBox(4,0,0,w,h, GPS.Config.ButtonBackground )
+end--]]
 
 function GPS:OpenMenu()
     local frame = vgui.Create("DFrame")
@@ -43,8 +49,8 @@ function GPS:OpenMenu()
     function frame:Paint(w,h)
         draw.RoundedBox(4, 0, 0, w, h, GPS.Config.BackgroundColor)
         surface.SetDrawColor( GPS.Config.LineColor )
-        surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .11, self:GetWide() * .98 , self:GetTall() * .11)
-        surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .05, self:GetWide()*.2 , self:GetTall() * .11)
+        surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .115, self:GetWide() * .98 , self:GetTall() * .115)
+        surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .04, self:GetWide()*.2 , self:GetTall() * .115)
         draw.SimpleText("Points : " .. LocalPlayer():GetNWInt("GPS2_Points"), "GPS::MenuFont", self:GetWide()*.025 , self:GetTall()*.05, GPS.Config.LabelColor)
         self:AdditionalPaint(w,h)
     end
@@ -88,12 +94,13 @@ function GPS:OpenMenu()
     
     frame.tabSelect = {}
 
-    frame.tabSelect[1] = vgui.Create("DLabel", frame)
+    frame.tabSelect[1] = vgui.Create("DButton", frame)
     frame.tabSelect[1]:SetFont("GPS::DermaLarge")
     frame.tabSelect[1]:SetText("Shop")
     frame.tabSelect[1]:SizeToContents()
-    frame.tabSelect[1]:SetPos(frame:GetWide()*0.25 - frame.tabSelect[1]:GetWide()/2 ,frame:GetTall()*0.05)
+    frame.tabSelect[1]:SetPos(frame:GetWide()*0.26 - frame.tabSelect[1]:GetWide()/2 ,frame:GetTall()*0.04)
     frame.tabSelect[1]:SetMouseInputEnabled(true)
+    --frame.tabSelect[1].Paint = button_drawfunc
     frame.tabSelect[1].DoClick = function()
         frame:ChangeToTab(0)
         frame.tabSelect:UpdateColors()
@@ -112,12 +119,13 @@ function GPS:OpenMenu()
             self:SetTextColor(GPS.Config.LabelColor)
         end
     end
-    frame.tabSelect[2] = vgui.Create("DLabel", frame)
+    frame.tabSelect[2] = vgui.Create("DButton", frame)
     frame.tabSelect[2]:SetFont("GPS::DermaLarge")
     frame.tabSelect[2]:SetText("Loadout")
     frame.tabSelect[2]:SizeToContents()
-    frame.tabSelect[2]:SetPos(frame:GetWide()*0.40 - frame.tabSelect[2]:GetWide()/2,frame:GetTall()*0.05)
+    frame.tabSelect[2]:SetPos(frame:GetWide()*0.40 - frame.tabSelect[2]:GetWide()/2,frame:GetTall()*0.04)
     frame.tabSelect[2]:SetMouseInputEnabled(true)
+    --frame.tabSelect[2].Paint = button_drawfunc
     frame.tabSelect[2].DoClick = function()
         frame:ChangeToTab(1)
         frame.tabSelect:UpdateColors()
@@ -137,12 +145,13 @@ function GPS:OpenMenu()
         end
     end
     if GPSPlyData.isadmin then
-        frame.tabSelect[3] = vgui.Create("DLabel", frame)
+        frame.tabSelect[3] = vgui.Create("DButton", frame)
         frame.tabSelect[3]:SetFont("GPS::DermaLarge")
         frame.tabSelect[3]:SetText("Admin")
         frame.tabSelect[3]:SizeToContents()
-        frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.05)
+        frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.04)
         frame.tabSelect[3]:SetMouseInputEnabled(true)
+        --frame.tabSelect[3].Paint = button_drawfunc
         frame.tabSelect[3].DoClick = function()
             frame:ChangeToTab(2)
             frame.tabSelect:UpdateColors()
@@ -788,15 +797,16 @@ function GPS:OpenMenu()
             end
             if skip then continue end
 
-            local catLabel = self:Add("DLabel")
-            catLabel:SetText( tostring(category) )
-            catLabel:Dock( TOP )
-            catLabel:SetFont("GPS::DermaLarge")
-            catLabel:SizeToContents()
-            catLabel:DockMargin(ScrW()*0.02, catLabel:GetTall()*.3, 0, ScrH()/216)
-            catLabel:SetMouseInputEnabled( true )
-            catLabel.selected = false
-            function catLabel:SelectThis()
+            local catButton = self:Add("DButton")
+            catButton:SetText( tostring(category) )
+            catButton:Dock( TOP )
+            catButton:SetFont("GPS::DermaLarge")
+            catButton:SizeToContents()
+            catButton:DockMargin(ScrW()*0.01, catButton:GetTall()*.3, 0, ScrH()/216)
+            catButton:SetMouseInputEnabled( true )
+            catButton.selected = false
+            --catButton.Paint = button_drawfunc
+            function catButton:SelectThis()
                 if frame.catSelect.selected == self then return end
                 frame.catSelect.selected.selected = false
                 frame.catSelect.selected:ToggleColor()
@@ -804,35 +814,35 @@ function GPS:OpenMenu()
                 self.selected = true
                 frame.itemShop:Update()
             end
-            function catLabel:OnCursorEntered()
+            function catButton:OnCursorEntered()
                 if not self.selected then
                 self:SetTextColor(GPS.Config.LabelColorSH)
                 else
                     self:SetTextColor(GPS.Config.LabelColorH)
                 end
             end
-            function catLabel:OnCursorExited()
+            function catButton:OnCursorExited()
                 if not self.selected then
                 self:SetTextColor(GPS.Config.LabelColor)
                 else
                     self:SetTextColor(GPS.Config.LabelColorS)
                 end
             end
-            function catLabel:ToggleColor()
+            function catButton:ToggleColor()
                 if not self.selected then
                     self:SetTextColor(GPS.Config.LabelColor)
                 else
                     self:SetTextColor(GPS.Config.LabelColorS)
                 end
             end
-            function catLabel:OnDepressed()
+            function catButton:OnDepressed()
                 if not self.selected then self:SelectThis() end
                 self:ToggleColor()
             end
             if not frame.catSelect.selected then 
-                frame.catSelect.selected = catLabel
-                catLabel.selected = true
-                catLabel:ToggleColor()
+                frame.catSelect.selected = catButton
+                catButton.selected = true
+                catButton:ToggleColor()
             end
         end
     end
@@ -904,8 +914,8 @@ function GPS.ClientShopReq(requestType, args)
         end
         net.WriteUInt(teamCount, 8)
         if teamCount > 0 then 
-            for team,_ in pairs(args.Teams) do
-                net.WriteUInt(team, 8)
+            for cteam,_ in pairs(args.Teams) do
+                net.WriteUInt(cteam, 16)
             end
         end
         if requestType == 5 then net.WriteUInt(args.id, 8) end
@@ -949,7 +959,7 @@ net.Receive("GPS2_SendToClient",function(len)
         GPS.ClItems[id].Teams = {}
 
         for j = 1, nTeams do
-            GPS.ClItems[id].Teams[net.ReadUInt(8)] = true
+            GPS.ClItems[id].Teams[net.ReadUInt(16)] = true
         end
         ::cont::
         GPS.ItemsByName[GPS.ClItems[id].ClassName] = id
