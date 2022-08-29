@@ -94,11 +94,11 @@ function GPS:OpenMenu()
     
     frame.tabSelect = {}
 
-    frame.tabSelect[1] = vgui.Create("DButton", frame)
+    frame.tabSelect[1] = vgui.Create("DLabel", frame)
     frame.tabSelect[1]:SetFont("GPS::DermaLarge")
     frame.tabSelect[1]:SetText("Shop")
     frame.tabSelect[1]:SizeToContents()
-    frame.tabSelect[1]:SetPos(frame:GetWide()*0.26 - frame.tabSelect[1]:GetWide()/2 ,frame:GetTall()*0.04)
+    frame.tabSelect[1]:SetPos(frame:GetWide()*0.26 - frame.tabSelect[1]:GetWide()/2 ,frame:GetTall()*0.05)
     frame.tabSelect[1]:SetMouseInputEnabled(true)
     --frame.tabSelect[1].Paint = button_drawfunc
     frame.tabSelect[1].DoClick = function()
@@ -119,11 +119,11 @@ function GPS:OpenMenu()
             self:SetTextColor(GPS.Config.LabelColor)
         end
     end
-    frame.tabSelect[2] = vgui.Create("DButton", frame)
+    frame.tabSelect[2] = vgui.Create("DLabel", frame)
     frame.tabSelect[2]:SetFont("GPS::DermaLarge")
     frame.tabSelect[2]:SetText("Loadout")
     frame.tabSelect[2]:SizeToContents()
-    frame.tabSelect[2]:SetPos(frame:GetWide()*0.40 - frame.tabSelect[2]:GetWide()/2,frame:GetTall()*0.04)
+    frame.tabSelect[2]:SetPos(frame:GetWide()*0.40 - frame.tabSelect[2]:GetWide()/2,frame:GetTall()*0.05)
     frame.tabSelect[2]:SetMouseInputEnabled(true)
     --frame.tabSelect[2].Paint = button_drawfunc
     frame.tabSelect[2].DoClick = function()
@@ -145,11 +145,11 @@ function GPS:OpenMenu()
         end
     end
     if GPSPlyData.isadmin then
-        frame.tabSelect[3] = vgui.Create("DButton", frame)
+        frame.tabSelect[3] = vgui.Create("DLabel", frame)
         frame.tabSelect[3]:SetFont("GPS::DermaLarge")
         frame.tabSelect[3]:SetText("Admin")
         frame.tabSelect[3]:SizeToContents()
-        frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.04)
+        frame.tabSelect[3]:SetPos(frame:GetWide()*0.55 - frame.tabSelect[3]:GetWide()/2,frame:GetTall()*0.05)
         frame.tabSelect[3]:SetMouseInputEnabled(true)
         --frame.tabSelect[3].Paint = button_drawfunc
         frame.tabSelect[3].DoClick = function()
@@ -797,7 +797,7 @@ function GPS:OpenMenu()
             end
             if skip then continue end
 
-            local catButton = self:Add("DButton")
+            local catButton = self:Add("DLabel")
             catButton:SetText( tostring(category) )
             catButton:Dock( TOP )
             catButton:SetFont("GPS::DermaLarge")
