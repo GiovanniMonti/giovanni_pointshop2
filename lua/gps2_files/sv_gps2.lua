@@ -251,7 +251,7 @@ net.Receive("GPS2_ClientShopReq", function(len,ply)
             return
         end
 
-        GPS.AddWeapon(tbl.ClassName, tbl.PrintName,  tbl.Price, tbl.Model, tbl.Category, tbl.Group,  tbl.teams)
+        GPS.AddWeapon(tbl.ClassName, tbl.PrintName,  tbl.Price, tbl.Model, tbl.Category, tbl.Group,  tbl.Teams)
         print("GPS : " .. ply:Nick() .. " added new weapon succesfully!")
 
     elseif requestType == 5 then
