@@ -9,7 +9,7 @@ GPS.Config = {
     ["LabelColorH"] = Color(151, 151, 151),
     ["LabelColorS"] = Color(51, 146, 255),
     ["LabelColorSH"] = Color(88, 145, 209),
-    ["BackgroundColor"] = Color(87,87,87,232),
+    ["BackgroundColor"] = Color(37,37,37,245),
     ["LineColor"] = Color(197, 197, 197),
     ["ButtonColor"] = Color(25, 93, 130),
     ["SelWepColor"] = Color(227, 34, 34),
@@ -17,7 +17,25 @@ GPS.Config = {
     ["DeleteColor"] = Color( 216,12,12),
     ["CloseBtnColor"] = Color(255, 255, 255),
     ["ButtonBackground"] = Color(41,40,40,252),
+    ["blurmat"] = Material( "pp/blurscreen" )
 }
+
+---[[ testing blur, why do the examples suck so much??
+local 
+
+local function drawPanelBlur( panel, layers, density, alpha )
+    local x, y = panel:LocalToScreen( 0, 0 )
+
+    surface.SetDrawColor( 255, 255, 255, alpha )
+    surface.SetMaterial( GPS.Config.blurmat )
+
+    GPS.Config.blurmat:SetFloat( "$blur", layers * density )
+    GPS.Config.blurmat:Recompute()
+    render.UpdateScreenEffectTexture()
+    surface.DrawTexturedRect( -x, -y, ScrW(), ScrH() )
+end
+--]]
+
 --[[
 local button_drawfunc = function(self,w,h)
     --self:DrawOutlinedRect()
@@ -47,8 +65,11 @@ function GPS:OpenMenu()
         end
     end
     function frame:Paint(w,h)
+        drawPanelBlur(self,4,10,255)
+
         draw.RoundedBox(4, 0, 0, w, h, GPS.Config.BackgroundColor)
         surface.SetDrawColor( GPS.Config.LineColor )
+
         surface.DrawLine(self:GetWide() * .02 , self:GetTall() * .115, self:GetWide() * .98 , self:GetTall() * .115)
         surface.DrawLine(self:GetWide() * .2 , self:GetTall() * .04, self:GetWide()*.2 , self:GetTall() * .115)
         draw.SimpleText("Points : " .. LocalPlayer():GetNWInt("GPS2_Points"), "GPS::MenuFont", self:GetWide()*.025 , self:GetTall()*.05, GPS.Config.LabelColor)
@@ -727,7 +748,7 @@ function GPS:OpenMenu()
             curItem.transactionButton:SetPos(curItem:GetWide()*0.7 , curItem:GetTall()*0.7 )
             curItem.transactionButton:SetMouseInputEnabled(true)
             function curItem.transactionButton:Update() 
-                if (GPS.ClItems[id].Owned) then
+                if ( GPS.ClItems[id] and GPS.ClItems[id].Owned) then
                     self:SetText( "Sell" )
                 else
                     self:SetText( "Buy" )
