@@ -20,9 +20,8 @@ GPS.Config = {
     ["blurmat"] = Material( "pp/blurscreen" )
 }
 
----[[ testing blur, why do the examples suck so much??
-local 
-
+---[[ testing blur, why do the examples suck so much?? 
+-- completed 
 local function drawPanelBlur( panel, layers, density, alpha )
     local x, y = panel:LocalToScreen( 0, 0 )
 
@@ -280,15 +279,27 @@ function GPS:OpenMenu()
         frame.adminPanel.categoryEntry:SetText('')
         frame.adminPanel.modelEntry:SetText('')
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
-
-        for n,tbl in pairs(weapons.GetList()) do
+        --[[ maybe not needed
+        for _,tbl in pairs(weapons.GetList()) do
             if tbl.ClassName == frame.adminPanel.nameEntry:GetValue() then
                 frame.adminPanel.modelEntry:SetText(tbl.WorldModel or '')
                 frame.adminPanel.printEntry:SetText(tbl.PrintName or '')
-                break
+                return
             end
         end
+        --]]
+    end
 
+    frame.adminPanel.nameEntry.OnValueChange = function(self)
+        if not frame.adminPanel.nameEntry:GetValue() or frame.adminPanel.nameEntry:GetValue() == '' then return end
+
+        for _,tbl in pairs(weapons.GetList()) do
+            if tbl.ClassName == frame.adminPanel.nameEntry:GetValue() then
+                if tbl.WorldModel then frame.adminPanel.modelEntry:SetText(tbl.WorldModel) end
+                if tbl.PrintName then frame.adminPanel.printEntry:SetText(tbl.PrintName) end
+                return
+            end
+        end
     end
 
     frame.adminPanel.wepSelect = vgui.Create("DComboBox", frame)
@@ -348,10 +359,22 @@ function GPS:OpenMenu()
     frame.adminPanel.priceEntry:SetFont("GPS::MenuFont")
     frame.adminPanel.priceEntry:SetPlaceholderText("Weapon price here")
     frame.adminPanel.priceEntry:SetTextColor( GPS.Config.LabelColor )
+    frame.adminPanel.priceEntry:SetUpdateOnType( true )
     frame.adminPanel.priceEntry:SetPaintBackground(false)
     frame.adminPanel.priceEntry.PaintOver = function(self, w,h)
         surface.SetDrawColor( GPS.Config.LineColor )
         self:DrawOutlinedRect()
+    end
+    frame.adminPanel.priceEntry.OnValueChange = function(self,val)
+        local strlen = string.len(val or '')
+        if strlen < 1 then return end
+
+        if not tonumber(val[strlen]) then self:SetText(string.sub(val,0,strlen-1)) return end
+
+        if not tonumber(val) or tonumber(val) < 0 then self:SetText('') return end
+
+        -- max nett-able value
+        if tonumber(val) > 4294967295 then self:SetText('4294967294') return end
     end
 
     frame.adminPanel.categoryEntry = vgui.Create("DTextEntry", frame)
