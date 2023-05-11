@@ -148,7 +148,7 @@ function GPS.SendWepsToClient(ply)
             if isadmin then net.WriteBool( ( not tbl.Teams ) or tbl.Teams[ply:Team()] ) end
 
             local nTeams = 0
-            if not tbl.teams then 
+            if not tbl.Teams then
                 nTeams = 0 
             else
                 nTeams = table.Count(tbl.Teams)
