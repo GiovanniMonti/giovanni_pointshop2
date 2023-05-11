@@ -156,7 +156,7 @@ function GPS.SendWepsToClient(ply)
             net.WriteUInt(nTeams, 8)
             if nTeams < 1 then continue end
             for ateam,_ in pairs(tbl.Teams) do
-                net.WriteUInt(ateam, 8)
+                net.WriteUInt(ateam, 16)
             end
         end
         --print(net.BytesWritten()) debugging
