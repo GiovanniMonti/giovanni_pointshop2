@@ -279,7 +279,7 @@ function GPS:OpenMenu()
         frame.adminPanel.categoryEntry:SetText('')
         frame.adminPanel.modelEntry:SetText('')
         frame.adminPanel.groupSelect:SetValue( "Pick a group" )
-        --[[ maybe not needed
+       
         for _,tbl in pairs(weapons.GetList()) do
             if tbl.ClassName == frame.adminPanel.nameEntry:GetValue() then
                 frame.adminPanel.modelEntry:SetText(tbl.WorldModel or '')
@@ -287,19 +287,7 @@ function GPS:OpenMenu()
                 return
             end
         end
-        --]]
-    end
-
-    frame.adminPanel.nameEntry.OnValueChange = function(self)
-        if not frame.adminPanel.nameEntry:GetValue() or frame.adminPanel.nameEntry:GetValue() == '' then return end
-
-        for _,tbl in pairs(weapons.GetList()) do
-            if tbl.ClassName == frame.adminPanel.nameEntry:GetValue() then
-                if tbl.WorldModel then frame.adminPanel.modelEntry:SetText(tbl.WorldModel) end
-                if tbl.PrintName then frame.adminPanel.printEntry:SetText(tbl.PrintName) end
-                return
-            end
-        end
+        
     end
 
     frame.adminPanel.wepSelect = vgui.Create("DComboBox", frame)
@@ -366,6 +354,7 @@ function GPS:OpenMenu()
         self:DrawOutlinedRect()
     end
     frame.adminPanel.priceEntry.OnValueChange = function(self,val)
+        val = tostring(val)
         local strlen = string.len(val or '')
         if strlen < 1 then return end
 
