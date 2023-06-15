@@ -317,7 +317,7 @@ hook.Add( "PlayerSpawn", "GPS2_SpawnHook", function( ply, transition )
 
 end )
 
-hook.Add( "PlayerChangedTeam ", "GPS2_TeamChangeHook", function(ply,oteam,nteam)
+hook.Add( "PlayerChangedTeam", "GPS2_TeamChangeHook", function(ply,oteam,nteam)
     
     for _, v in ipairs( GPS.SEL_NW ) do
         local cursel = ply:GetNWInt( v, false ) 
